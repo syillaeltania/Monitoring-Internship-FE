@@ -63,7 +63,7 @@ const rows = computed(() =>
   })),
 );
 const planRowClass = (row: Record<string, unknown>) =>
-  row._isCompleted ? 'bg-[#17315f] text-white hover:bg-[#17315f]' : '';
+  row._isCompleted ? '!bg-[#17315f] text-white' : '';
 const planCellClass = (row: Record<string, unknown>) => (row._isCompleted ? '!text-white' : '');
 const openEdit = (row: Record<string, unknown>) => {
   editingPlan.value = plans.value.find((plan) => plan.id === row.id) ?? null;

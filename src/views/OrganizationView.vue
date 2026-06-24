@@ -3,9 +3,14 @@ import { computed, onMounted, ref } from 'vue';
 import PageHeader from '../components/PageHeader.vue';
 import { api, type Intern } from '../services/api';
 import { dateShort } from '../utils/format';
+import { buildOrganizationDropPayload } from '../utils/organizationMapping';
 import { getPlacementKey } from '../utils/replacementScheduler';
 
 const activeInterns = ref<Intern[]>([]);
+const draggedInternId = ref('');
+const dropTargetKey = ref('');
+const savingInternId = ref('');
+const mappingFeedback = ref('');
 
 const divisionLabels: Record<string, string> = {
   CORE: 'CORPORATE OPERATIONS RESOURCE ENHANCEMENT (CORE)',
@@ -94,6 +99,52 @@ const teamsByDivision = computed(() => {
 
 const totalResources = computed(() => activeInterns.value.length);
 
+function dragPayload(division: string, team: { title: string; matchTeams: string[]; leader: string }) {
+  return buildOrganizationDropPayload(division, team);
+}
+
+function onDragStart(event: DragEvent, intern: Intern) {
+  draggedInternId.value = intern.id;
+  event.dataTransfer?.setData('text/plain', intern.id);
+  if (event.dataTransfer) event.dataTransfer.effectAllowed = 'move';
+  mappingFeedback.value = '';
+}
+
+function onDragEnd() {
+  draggedInternId.value = '';
+  dropTargetKey.value = '';
+}
+
+async function onDrop(event: DragEvent, division: string, team: { title: string; matchTeams: string[]; leader: string }) {
+  const internId = event.dataTransfer?.getData('text/plain') || draggedInternId.value;
+  const intern = activeInterns.value.find((item) => item.id === internId);
+  if (!intern) return;
+
+  const payload = dragPayload(division, team);
+  const isSameMapping = intern.division === payload.division && intern.team === payload.team && (intern.leader ?? '') === payload.leader;
+  if (isSameMapping) {
+    onDragEnd();
+    return;
+  }
+
+  const previousInterns = [...activeInterns.value];
+  savingInternId.value = intern.id;
+  mappingFeedback.value = `Memindahkan ${intern.name} ke ${payload.division} / ${payload.team}...`;
+  activeInterns.value = activeInterns.value.map((item) => (item.id === intern.id ? { ...item, ...payload } : item));
+
+  try {
+    const { data } = await api.updateIntern(intern.id, payload);
+    activeInterns.value = activeInterns.value.map((item) => (item.id === intern.id ? { ...item, ...data } : item));
+    mappingFeedback.value = `${intern.name} berhasil dipindahkan ke ${payload.division} / ${payload.team}.`;
+  } catch {
+    activeInterns.value = previousInterns;
+    mappingFeedback.value = `Mapping ${intern.name} belum bisa disimpan. Periksa koneksi backend.`;
+  } finally {
+    savingInternId.value = '';
+    onDragEnd();
+  }
+}
+
 onMounted(async () => {
   const data: any = await api.organization();
   activeInterns.value = data.activeInterns;
@@ -102,6 +153,9 @@ onMounted(async () => {
 
 <template>
   <PageHeader title="Pemetaan Organisasi" subtitle="Struktur penempatan magang aktif berdasarkan divisi, tim, leader, dan peserta." />
+  <p v-if="mappingFeedback" class="mb-4 rounded-md border border-blue-100 bg-blue-50 px-4 py-3 text-sm font-semibold text-navy">
+    {{ mappingFeedback }}
+  </p>
 
   <section
     class="overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm"
@@ -150,7 +204,11 @@ onMounted(async () => {
           <article
             v-for="team in division.teams"
             :key="team.title"
-            class="overflow-hidden rounded-sm border border-slate-700 bg-white text-xs shadow-sm"
+            class="overflow-hidden rounded-sm border bg-white text-xs shadow-sm transition"
+            :class="dropTargetKey === `${division.division}-${team.title}` ? 'border-blue-500 ring-2 ring-blue-200' : 'border-slate-700'"
+            @dragover.prevent="dropTargetKey = `${division.division}-${team.title}`"
+            @dragleave="dropTargetKey = ''"
+            @drop.prevent="onDrop($event, division.division, team)"
           >
             <div class="flex min-h-[86px] flex-col items-center justify-center bg-slate-950 px-3 py-3 text-center font-bold leading-snug text-white">
               <span class="text-sm">{{ team.title }}</span>
@@ -165,13 +223,17 @@ onMounted(async () => {
               <div
                 v-for="intern in team.interns"
                 :key="intern.id"
-                class="grid grid-cols-[62px_1fr] items-stretch"
+                draggable="true"
+                class="grid cursor-grab grid-cols-[62px_1fr] items-stretch transition active:cursor-grabbing"
                 :class="daysUntil(intern.endDate) <= 30 ? 'bg-yellow-100' : intern.type === 'PROFESSIONAL' ? 'bg-emerald-50' : 'bg-cyan-50'"
+                @dragstart="onDragStart($event, intern)"
+                @dragend="onDragEnd"
               >
                 <div class="border-r border-slate-300 px-2 py-2 font-semibold leading-snug text-slate-700">{{ intern.position || '-' }}</div>
                 <div class="px-2 py-2 leading-snug text-slate-800">
                   <p class="break-words font-semibold">{{ intern.name }}</p>
                   <p class="mt-1 text-[11px] text-slate-500">{{ intern.institution || '-' }} · {{ dateShort(intern.endDate) }}</p>
+                  <p v-if="savingInternId === intern.id" class="mt-1 text-[10px] font-semibold text-navy">Menyimpan mapping...</p>
                 </div>
               </div>
             </div>
