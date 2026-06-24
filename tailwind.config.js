@@ -5,14 +5,14 @@ export default {
     extend: {
       colors: {
         navy: '#0f2f5f',
-        ink: '#172033',
-        mist: '#f4f7fb',
+        ink: '#1F2937',
+        mist: '#EEF3F7',
         success: '#1f9d6a',
         warning: '#d98c00',
         danger: '#c2413a',
       },
       boxShadow: {
-        panel: '0 12px 30px rgba(15, 47, 95, 0.08)',
+        panel: '0 4px 16px rgba(15, 23, 42, 0.06)',
       },
     },
   },

@@ -121,8 +121,8 @@ onMounted(loadChecklist);
     </template>
   </DataTable>
 
-  <div v-if="selectedChecklist" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 p-4 backdrop-blur-sm">
-    <form class="w-full max-w-2xl rounded-lg bg-white p-5 shadow-xl transition duration-200" @submit.prevent="saveChecklist">
+  <div v-if="selectedChecklist" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 p-4">
+    <form class="w-full max-w-2xl rounded-2xl border border-[#E5EAF0] bg-white p-5 shadow-panel transition duration-200" @submit.prevent="saveChecklist">
       <div class="mb-5 flex items-start justify-between gap-3">
         <div>
           <h2 class="text-lg font-semibold text-ink">Edit Checklist Penyelesaian</h2>

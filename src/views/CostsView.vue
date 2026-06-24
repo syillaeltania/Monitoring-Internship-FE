@@ -156,7 +156,7 @@ watch(filters, async () => {
   </div>
 
   <section class="mb-6 grid gap-4 xl:grid-cols-4">
-    <article class="panel bg-gradient-to-br from-cyan-50 via-white to-white p-5 ring-1 ring-cyan-100">
+    <article class="panel border-cyan-100 bg-cyan-50 p-5">
       <p class="text-xs font-semibold uppercase text-cyan-700">Data</p>
       <h2 class="mt-2 text-lg font-semibold text-ink">{{ selectedMonthLabel }} {{ filters.year }}</h2>
       <div class="mt-4 space-y-3 text-sm text-slate-600">
@@ -166,7 +166,7 @@ watch(filters, async () => {
       </div>
     </article>
 
-    <article class="panel bg-gradient-to-br from-emerald-50 via-white to-white p-5 ring-1 ring-emerald-100">
+    <article class="panel border-emerald-100 bg-emerald-50 p-5">
       <p class="text-xs font-semibold uppercase text-success">Information</p>
       <h2 class="mt-2 text-lg font-semibold text-ink">{{ rupiah(data.total) }}</h2>
       <div class="mt-4 space-y-3 text-sm text-slate-600">
@@ -178,7 +178,7 @@ watch(filters, async () => {
       </div>
     </article>
 
-    <article class="panel bg-gradient-to-br from-indigo-50 via-white to-white p-5 ring-1 ring-indigo-100">
+    <article class="panel border-indigo-100 bg-indigo-50 p-5">
       <p class="text-xs font-semibold uppercase text-indigo-700">Knowledge</p>
       <h2 class="mt-2 text-lg font-semibold text-ink">{{ topDivision?.name ?? '-' }}</h2>
       <p class="mt-1 text-sm text-slate-500">Divisi dengan cost terbesar: {{ rupiah(topDivision?.value ?? 0) }}</p>
@@ -190,7 +190,7 @@ watch(filters, async () => {
       </div>
     </article>
 
-    <article class="panel bg-gradient-to-br from-amber-50 via-white to-white p-5 ring-1 ring-amber-100">
+    <article class="panel border-amber-100 bg-amber-50 p-5">
       <p class="text-xs font-semibold uppercase text-amber-700">Wisdom</p>
       <h2 class="mt-2 text-lg font-semibold text-ink">Rekomendasi HCM</h2>
       <ul class="mt-4 space-y-3 text-sm text-slate-600">

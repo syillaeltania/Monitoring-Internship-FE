@@ -5,7 +5,7 @@ defineProps<{ label: string; value: string | number; tone?: ToneKey }>();
 </script>
 
 <template>
-  <div class="panel group relative overflow-hidden bg-gradient-to-br p-5 ring-1 transition duration-300 hover:-translate-y-0.5 hover:shadow-xl" :class="toneWidgetClass(tone)">
+  <div class="panel group relative overflow-hidden p-5 transition duration-300 hover:shadow-lg" :class="toneWidgetClass(tone)">
     <div class="absolute inset-x-0 top-0 h-1" :class="toneAccentClass(tone)"></div>
     <div class="flex items-start justify-between gap-3">
       <p class="text-sm font-semibold text-slate-600">{{ label }}</p>

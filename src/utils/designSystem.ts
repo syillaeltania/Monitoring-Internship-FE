@@ -7,14 +7,14 @@ export const resolveTone = (tone?: string): ToneKey => (tone && toneSet.has(tone
 
 export const toneWidgetClass = (tone?: string) =>
   ({
-    navy: 'from-blue-50 via-white to-white ring-blue-100',
-    green: 'from-emerald-50 via-white to-white ring-emerald-100',
-    orange: 'from-amber-50 via-white to-white ring-amber-100',
-    red: 'from-red-50 via-white to-white ring-red-100',
-    cyan: 'from-cyan-50 via-white to-white ring-cyan-100',
-    indigo: 'from-indigo-50 via-white to-white ring-indigo-100',
-    slate: 'from-slate-100 via-white to-white ring-slate-200',
-    purple: 'from-violet-50 via-white to-white ring-violet-100',
+    navy: 'bg-blue-50 border-blue-100',
+    green: 'bg-emerald-50 border-emerald-100',
+    orange: 'bg-amber-50 border-amber-100',
+    red: 'bg-red-50 border-red-100',
+    cyan: 'bg-cyan-50 border-cyan-100',
+    indigo: 'bg-indigo-50 border-indigo-100',
+    slate: 'bg-slate-50 border-slate-200',
+    purple: 'bg-violet-50 border-violet-100',
   })[resolveTone(tone)];
 
 export const toneTextClass = (tone?: string) =>

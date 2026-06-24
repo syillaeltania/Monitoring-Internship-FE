@@ -93,7 +93,7 @@ const option = computed(() => {
 </script>
 
 <template>
-  <div class="panel overflow-hidden bg-gradient-to-br p-5 ring-1 transition duration-300 hover:-translate-y-0.5 hover:shadow-xl" :class="toneWidgetClass(tone ?? 'green')">
+  <div class="panel overflow-hidden p-5 transition duration-300 hover:shadow-lg" :class="toneWidgetClass(tone ?? 'green')">
     <div class="mb-4 flex items-center gap-3">
       <span class="h-8 w-1 rounded-full" :class="toneAccentClass(tone ?? 'green')"></span>
       <h3 class="text-sm font-semibold text-ink">{{ title }}</h3>
