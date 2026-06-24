@@ -5,10 +5,13 @@ import PageHeader from '../components/PageHeader.vue';
 import StatusBadge from '../components/StatusBadge.vue';
 import { api, type Intern } from '../services/api';
 import { buildReplacementBoard, buildSchedulerRows, getMonthInterns, getReplacementCellTone, type ReplacementBoardColumn, type ReplacementBoardItem } from '../utils/replacementScheduler';
+import { replacementTabs, type ReplacementTabKey } from '../utils/replacementTabs';
 
 const replacement = ref<any[]>([]);
 const interns = ref<Intern[]>([]);
 const selectedYear = ref(2026);
+const loading = ref(false);
+const activeTab = ref<ReplacementTabKey>('scheduler');
 const monthLabels = ['JAN', 'FEB', 'MAR', 'APR', 'MEI', 'JUN', 'JUL', 'AGU', 'SEP', 'OKT', 'NOV', 'DES'];
 const visibleDivisions = ref<Record<string, boolean>>({});
 
@@ -85,9 +88,14 @@ const boardCardClass = (item: ReplacementBoardItem) => {
 };
 
 onMounted(async () => {
-  const [replacementData, internData] = await Promise.all([api.replacement(), api.interns()]);
-  replacement.value = replacementData;
-  interns.value = internData;
+  loading.value = true;
+  try {
+    const [replacementData, internData] = await Promise.all([api.replacement(), api.interns()]);
+    replacement.value = replacementData;
+    interns.value = internData;
+  } finally {
+    loading.value = false;
+  }
 });
 </script>
 
@@ -117,7 +125,22 @@ onMounted(async () => {
     </div>
   </section>
 
-  <section class="panel mb-5 p-5">
+  <section class="panel mb-5 p-2">
+    <div class="flex gap-2 overflow-x-auto">
+      <button
+        v-for="tab in replacementTabs"
+        :key="tab.key"
+        class="min-w-fit rounded-md px-4 py-3 text-left text-sm font-semibold transition"
+        :class="activeTab === tab.key ? 'bg-navy text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100 hover:text-navy'"
+        @click="activeTab = tab.key"
+      >
+        <span class="block">{{ tab.label }}</span>
+        <span class="mt-1 block text-xs font-medium opacity-75">{{ tab.description }}</span>
+      </button>
+    </div>
+  </section>
+
+  <section v-if="activeTab === 'kanban'" class="panel mb-5 p-4 sm:p-5">
     <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
       <div>
         <h2 class="text-sm font-semibold text-ink">Kanban Risiko Replacement</h2>
@@ -178,7 +201,7 @@ onMounted(async () => {
     </div>
   </section>
 
-  <section class="panel mb-5 p-5">
+  <section v-if="activeTab === 'scheduler'" class="panel mb-5 p-4 sm:p-5">
     <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
       <div>
         <h2 class="text-sm font-semibold text-ink">Scheduler Pergantian Magang</h2>
@@ -244,7 +267,14 @@ onMounted(async () => {
     </div>
   </section>
 
-  <DataTable :columns="['Divisi', 'Tim', 'Leader', 'Instansi Aktif', 'Profesional Aktif', 'Minimum', 'Selesai Terdekat', 'Status', 'Kandidat', 'PIC']" :rows="rows">
-    <template #Status="{ row }"><StatusBadge :value="String(row.Status)" /></template>
-  </DataTable>
+  <section v-if="activeTab === 'table'" class="space-y-4">
+    <DataTable
+      :columns="['Divisi', 'Tim', 'Leader', 'Instansi Aktif', 'Profesional Aktif', 'Minimum', 'Selesai Terdekat', 'Status', 'Kandidat', 'PIC']"
+      :rows="rows"
+      :loading="loading"
+      empty-message="Tidak ada data kebutuhan replacement."
+    >
+      <template #Status="{ row }"><StatusBadge :value="String(row.Status)" /></template>
+    </DataTable>
+  </section>
 </template>

@@ -82,6 +82,6 @@ const option = computed(() => {
 <template>
   <div class="panel p-5">
     <h3 class="mb-4 text-sm font-semibold text-ink">{{ title }}</h3>
-    <VChart class="h-72 w-full" :option="option" autoresize />
+    <VChart class="h-64 w-full sm:h-72" :option="option" autoresize />
   </div>
 </template>

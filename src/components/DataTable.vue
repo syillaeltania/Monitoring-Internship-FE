@@ -5,6 +5,8 @@ import { pageSizeOptions, paginateRows } from '../utils/pagination';
 const props = defineProps<{
   columns: string[];
   rows: Record<string, unknown>[];
+  loading?: boolean;
+  emptyMessage?: string;
   rowClass?: (row: Record<string, unknown>) => string;
   cellClass?: (row: Record<string, unknown>, column: string) => string;
 }>();
@@ -36,7 +38,13 @@ watch(pagination, (value) => {
           </tr>
         </thead>
         <tbody class="divide-y divide-slate-100 bg-white">
+          <tr v-if="props.loading" v-for="index in pageSize" :key="`loading-${index}`">
+            <td v-for="column in columns" :key="column" class="whitespace-nowrap px-4 py-3">
+              <div class="h-4 w-full max-w-32 animate-pulse rounded bg-slate-100"></div>
+            </td>
+          </tr>
           <tr
+            v-else
             v-for="(row, index) in pagination.rows"
             :key="String(row.id ?? index)"
             class="hover:bg-slate-50"
@@ -51,8 +59,16 @@ watch(pagination, (value) => {
               <slot :name="column" :row="row">{{ row[column] }}</slot>
             </td>
           </tr>
-          <tr v-if="pagination.totalRows === 0">
-            <td :colspan="columns.length" class="px-4 py-8 text-center text-slate-500">Data belum tersedia.</td>
+          <tr v-if="!props.loading && pagination.totalRows === 0">
+            <td :colspan="columns.length" class="px-4 py-12 text-center">
+              <div class="mx-auto flex max-w-md flex-col items-center gap-2">
+                <div class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-400">
+                  <span class="text-lg font-semibold">-</span>
+                </div>
+                <p class="text-sm font-semibold text-slate-600">{{ props.emptyMessage ?? 'Data belum tersedia.' }}</p>
+                <p class="text-xs text-slate-400">Ubah filter atau tambahkan data baru jika diperlukan.</p>
+              </div>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -66,7 +82,7 @@ watch(pagination, (value) => {
         <span>data</span>
       </div>
       <div class="flex flex-wrap items-center gap-3">
-        <span>{{ pagination.startIndex }}-{{ pagination.endIndex }} dari {{ pagination.totalRows }}</span>
+        <span>{{ props.loading ? 'Memuat data...' : `${pagination.startIndex}-${pagination.endIndex} dari ${pagination.totalRows}` }}</span>
         <div class="flex items-center gap-2">
           <button
             class="rounded-md border border-slate-200 px-3 py-1.5 text-sm font-semibold text-ink disabled:cursor-not-allowed disabled:opacity-40"

@@ -19,6 +19,7 @@ const costForm = reactive({
 });
 const feedback = ref('');
 const saving = ref(false);
+const loading = ref(false);
 
 const selectedMonthLabel = computed(() => monthOptions.find((month) => month.value === filters.month)?.label ?? '-');
 const participantCount = computed(() => data.value.rows.length);
@@ -74,7 +75,12 @@ const tableRows = computed(() =>
 );
 
 async function loadCosts() {
-  data.value = await api.costs(buildCostQuery(filters));
+  loading.value = true;
+  try {
+    data.value = await api.costs(buildCostQuery(filters));
+  } finally {
+    loading.value = false;
+  }
 }
 
 function openEditCost(row: Record<string, any>) {
@@ -119,7 +125,7 @@ watch(filters, async () => {
 
 <template>
   <PageHeader title="Monitoring Cost" subtitle="Perhitungan uang makan, gaji pokok, total cost per peserta, divisi, tipe, dan keseluruhan." />
-  <div class="mb-4 grid gap-3 md:grid-cols-5">
+  <div class="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
     <select v-model.number="filters.month" class="control">
       <option v-for="month in monthOptions" :key="month.value" :value="month.value">{{ month.label }}</option>
     </select>
@@ -201,7 +207,7 @@ watch(filters, async () => {
       </div>
       <button class="rounded-md border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600" @click="editingCost = null">Tutup</button>
     </div>
-    <div class="grid gap-3 md:grid-cols-3">
+    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       <input v-model.number="costForm.baseSalary" class="control" type="number" min="0" placeholder="Gaji Pokok" />
       <input v-model.number="costForm.totalMealAllowance" class="control" type="number" min="0" placeholder="Uang Makan" />
       <div class="rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-ink">
@@ -217,7 +223,12 @@ watch(filters, async () => {
   </section>
   <p v-else-if="feedback" class="mb-3 text-sm text-slate-600">{{ feedback }}</p>
 
-  <DataTable :columns="['Peserta', 'Tipe', 'Divisi', 'Gaji Pokok', 'Uang Makan', 'Total', 'Aksi']" :rows="tableRows">
+  <DataTable
+    :columns="['Peserta', 'Tipe', 'Divisi', 'Gaji Pokok', 'Uang Makan', 'Total', 'Aksi']"
+    :rows="tableRows"
+    :loading="loading"
+    empty-message="Tidak ada cost pada periode atau filter ini."
+  >
     <template #Aksi="{ row }">
       <button class="rounded-md border border-slate-200 px-3 py-1.5 text-xs font-semibold text-navy" @click="openEditCost(row)">Edit</button>
     </template>

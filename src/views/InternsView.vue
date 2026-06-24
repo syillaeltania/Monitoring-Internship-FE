@@ -18,6 +18,7 @@ const isFormOpen = ref(false);
 const editingId = ref('');
 const feedback = ref('');
 const saving = ref(false);
+const loading = ref(false);
 
 interface InternForm {
   name: string;
@@ -88,7 +89,12 @@ const rows = computed(() =>
 );
 
 async function loadInterns() {
-  interns.value = await api.interns();
+  loading.value = true;
+  try {
+    interns.value = await api.interns();
+  } finally {
+    loading.value = false;
+  }
 }
 
 function resetForm() {
@@ -204,7 +210,7 @@ watch(division, () => {
       <h2 class="text-sm font-semibold text-ink">{{ editingId ? 'Edit Peserta' : 'Tambah Peserta' }}</h2>
       <button class="rounded-md border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600" @click="isFormOpen = false">Tutup</button>
     </div>
-    <div class="grid gap-3 md:grid-cols-3 xl:grid-cols-4">
+    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       <input v-model="form.name" class="control" placeholder="Nama" />
       <select v-model="form.type" class="control">
         <option value="INSTITUTION">Instansi</option>
@@ -236,7 +242,7 @@ watch(division, () => {
     </div>
   </section>
 
-  <div class="mb-4 grid gap-3 md:grid-cols-6">
+  <div class="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
     <input v-model="search" class="control" placeholder="Cari nama" />
     <select v-model="type" class="control">
       <option value="">Semua tipe</option>
@@ -268,7 +274,12 @@ watch(division, () => {
 
   <p v-if="feedback && !isFormOpen" class="mb-3 text-sm text-slate-600">{{ feedback }}</p>
 
-  <DataTable :columns="['Nama', 'Tipe', 'Instansi', 'Divisi', 'Tim', 'Posisi', 'Leader', 'Masuk', 'Selesai', 'Durasi', 'Status', 'Aksi']" :rows="rows">
+  <DataTable
+    :columns="['Nama', 'Tipe', 'Instansi', 'Divisi', 'Tim', 'Posisi', 'Leader', 'Masuk', 'Selesai', 'Durasi', 'Status', 'Aksi']"
+    :rows="rows"
+    :loading="loading"
+    empty-message="Tidak ada peserta yang sesuai dengan filter."
+  >
     <template #Status="{ row }"><StatusBadge :value="String(row.Status)" /></template>
     <template #Aksi="{ row }">
       <div class="flex gap-2">

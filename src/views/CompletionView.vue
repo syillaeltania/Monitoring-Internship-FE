@@ -10,6 +10,7 @@ const selectedInternId = ref('');
 const selectedChecklist = computed(() => checklist.value.find((entry) => entry.internId === selectedInternId.value));
 const feedback = ref('');
 const saving = ref(false);
+const loading = ref(false);
 const checklistItems = [
   { key: 'companyLaptopReturned', label: 'Pengembalian laptop perusahaan' },
   { key: 'idCardReturned', label: 'Pengembalian name tag / ID card' },
@@ -40,7 +41,12 @@ const rows = computed(() =>
 );
 
 async function loadChecklist() {
-  checklist.value = await api.completion();
+  loading.value = true;
+  try {
+    checklist.value = await api.completion();
+  } finally {
+    loading.value = false;
+  }
 }
 
 function selectChecklist(row: Record<string, unknown>) {
@@ -102,7 +108,13 @@ onMounted(loadChecklist);
 
 <template>
   <PageHeader title="Checklist Penyelesaian" subtitle="Kontrol administrasi saat peserta selesai magang." />
-  <DataTable :columns="['Peserta', 'Divisi', 'Tim', 'Progress', 'Status', 'Aksi']" :rows="rows" :row-class="rowClass">
+  <DataTable
+    :columns="['Peserta', 'Divisi', 'Tim', 'Progress', 'Status', 'Aksi']"
+    :rows="rows"
+    :loading="loading"
+    empty-message="Tidak ada checklist peserta aktif."
+    :row-class="rowClass"
+  >
     <template #Status="{ row }"><StatusBadge :value="String(row.Status)" /></template>
     <template #Aksi="{ row }">
       <button class="rounded-md border border-slate-200 px-3 py-1.5 text-xs font-semibold text-navy" @click="selectChecklist(row)">Edit</button>

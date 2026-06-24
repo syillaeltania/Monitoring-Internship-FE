@@ -15,6 +15,7 @@ const showCreateForm = ref(false);
 const statusDraft = ref('');
 const isSaving = ref(false);
 const isCreating = ref(false);
+const loading = ref(false);
 const emptyPlanForm = () => ({
   name: '',
   type: 'INSTITUTION',
@@ -101,28 +102,46 @@ const createPlan = async () => {
     isCreating.value = false;
   }
 };
-onMounted(async () => {
-  plans.value = await api.plans();
-});
+async function loadPlans() {
+  loading.value = true;
+  try {
+    plans.value = await api.plans();
+  } finally {
+    loading.value = false;
+  }
+}
+
+onMounted(loadPlans);
 </script>
 
 <template>
-  <PageHeader title="Rencana Magang" subtitle="Peserta diterima atau sudah dikirim surat penerimaan namun belum join." />
-  <section class="mb-4 flex flex-wrap items-center justify-end gap-3">
+  <PageHeader title="Rencana Magang" subtitle="Peserta diterima atau sudah dikirim surat penerimaan namun belum join.">
     <button class="rounded-md bg-navy px-4 py-2 text-sm font-semibold text-white" @click="openCreate">Tambah Peserta</button>
-    <select v-model="statusFilter" class="control w-full sm:w-72">
-      <option v-for="status in statusFilterOptions" :key="status || 'all'" :value="status">
-        {{ status ? status.replaceAll('_', ' ') : 'Semua status proses' }}
-      </option>
-    </select>
-    <select v-model="sortMode" class="control w-full sm:w-72">
-      <option value="joinDateAsc">Terdekat akan join</option>
-      <option value="joinDateDesc">Terlama akan join</option>
-    </select>
+  </PageHeader>
+
+  <section class="panel mb-4 p-4">
+    <div class="grid gap-3 lg:grid-cols-[1fr_260px_260px]">
+      <div>
+        <p class="text-sm font-semibold text-ink">Filter Rencana</p>
+        <p class="mt-1 text-xs text-slate-500">Urutkan dan pantau peserta berdasarkan status proses join.</p>
+      </div>
+      <select v-model="statusFilter" class="control">
+        <option v-for="status in statusFilterOptions" :key="status || 'all'" :value="status">
+          {{ status ? status.replaceAll('_', ' ') : 'Semua status proses' }}
+        </option>
+      </select>
+      <select v-model="sortMode" class="control">
+        <option value="joinDateAsc">Terdekat akan join</option>
+        <option value="joinDateDesc">Terlama akan join</option>
+      </select>
+    </div>
   </section>
+
   <DataTable
     :columns="['Nama', 'Tipe', 'Instansi', 'Jurusan', 'Divisi', 'Tim', 'Leader', 'Masuk', 'Selesai', 'Proses', 'Aksi']"
     :rows="rows"
+    :loading="loading"
+    empty-message="Tidak ada rencana magang yang sesuai filter."
     :row-class="planRowClass"
     :cell-class="planCellClass"
   >
@@ -172,7 +191,7 @@ onMounted(async () => {
         <p class="mt-1 text-sm text-slate-500">Status awal akan tersimpan sebagai WAITING JOIN.</p>
       </div>
 
-      <div class="grid gap-4 md:grid-cols-2">
+      <div class="grid gap-4 sm:grid-cols-2">
         <label class="block text-sm font-semibold text-slate-600">
           Nama
           <input v-model="planForm.name" required class="control mt-2 w-full" />
@@ -231,7 +250,7 @@ onMounted(async () => {
           Status onboarding
           <input v-model="planForm.onboardingStatus" class="control mt-2 w-full" />
         </label>
-        <label class="block text-sm font-semibold text-slate-600 md:col-span-2">
+        <label class="block text-sm font-semibold text-slate-600 sm:col-span-2">
           Notes
           <textarea v-model="planForm.notes" class="control mt-2 min-h-24 w-full"></textarea>
         </label>

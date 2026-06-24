@@ -191,13 +191,13 @@ onMounted(loadData);
           <h3 class="text-sm font-semibold text-ink">Export Report</h3>
           <p class="mt-2 text-sm text-slate-500">{{ selectedKind.description }}</p>
         </div>
-        <div class="flex gap-3">
+        <div class="flex flex-wrap gap-3">
           <button class="rounded-md border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-ink" @click="exportCsv">Excel/CSV</button>
           <button class="rounded-md border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-ink" @click="exportPdf">PDF</button>
         </div>
       </div>
 
-      <div class="mt-4 grid gap-3 md:grid-cols-3 xl:grid-cols-6">
+      <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         <select v-model="reportKind" class="control">
           <option v-for="item in reportKinds" :key="item.value" :value="item.value">{{ item.label }}</option>
         </select>
@@ -252,6 +252,5 @@ onMounted(loadData);
     </div>
   </section>
 
-  <div v-if="loading" class="panel p-6 text-sm text-slate-500">Memuat report...</div>
-  <DataTable v-else :columns="reportColumns" :rows="reportRows" />
+  <DataTable :columns="reportColumns" :rows="reportRows" :loading="loading" empty-message="Tidak ada data report yang sesuai filter." />
 </template>

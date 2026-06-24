@@ -12,7 +12,7 @@ const nav = [
 </script>
 
 <template>
-  <div class="min-h-screen bg-mist">
+  <div class="min-h-screen min-w-0 bg-mist">
     <aside class="fixed inset-y-0 left-0 z-10 hidden w-64 border-r border-slate-200 bg-navy text-white lg:block">
       <div class="border-b border-white/10 p-6">
         <p class="text-sm uppercase tracking-wider text-white/60">HCM System</p>
@@ -42,22 +42,22 @@ const nav = [
       </nav>
     </aside>
 
-    <div class="lg:pl-64">
+    <div class="min-w-0 lg:pl-64">
       <header class="sticky top-0 z-20 border-b border-slate-200 bg-white/95 backdrop-blur">
-        <div class="flex min-h-16 items-center justify-between gap-4 px-5 lg:px-8">
-          <div>
+        <div class="flex min-h-16 items-center justify-between gap-3 px-4 sm:gap-4 sm:px-5 lg:px-8">
+          <div class="min-w-0">
             <p class="text-xs font-semibold uppercase text-success">Neuron HCM</p>
-            <p class="text-lg font-semibold text-ink">Internship Lifecycle Control</p>
+            <p class="truncate text-base font-semibold text-ink sm:text-lg">Internship Lifecycle Control</p>
           </div>
-          <div class="flex items-center gap-3">
-            <select class="control w-36">
+          <div class="flex shrink-0 items-center gap-2 sm:gap-3">
+            <select class="control hidden w-36 sm:block">
               <option>HCM Staff</option>
               <option>HCM Leader</option>
             </select>
-            <div class="h-9 w-9 rounded-full bg-success text-center text-sm font-bold leading-9 text-white">HC</div>
+            <div class="h-9 w-9 shrink-0 rounded-full bg-success text-center text-sm font-bold leading-9 text-white">HC</div>
           </div>
         </div>
-        <nav class="flex gap-2 overflow-x-auto border-t border-slate-100 px-4 py-2 lg:hidden">
+        <nav class="flex gap-2 overflow-x-auto border-t border-slate-100 px-3 py-2 sm:px-4 lg:hidden">
           <RouterLink
             v-for="[path, label] in nav"
             :key="path"
@@ -69,7 +69,7 @@ const nav = [
           </RouterLink>
         </nav>
       </header>
-      <main class="p-5 lg:p-8">
+      <main class="min-w-0 p-4 sm:p-5 lg:p-8">
         <RouterView />
       </main>
     </div>
