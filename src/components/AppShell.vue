@@ -1,4 +1,13 @@
 <script setup lang="ts">
+import { computed, onMounted, ref } from 'vue';
+import { api } from '../services/api';
+import {
+  countNotifications,
+  notificationSeverityClass,
+  notificationSeverityLabel,
+  type AppNotification,
+} from '../utils/notifications';
+
 const nav = [
   ['/', 'Dashboard'],
   ['/interns', 'Peserta'],
@@ -9,6 +18,14 @@ const nav = [
   ['/organization', 'Pemetaan'],
   ['/reports', 'Report'],
 ];
+
+const notifications = ref<AppNotification[]>([]);
+const notificationDrawerOpen = ref(false);
+const notificationCount = computed(() => countNotifications(notifications.value));
+
+onMounted(async () => {
+  notifications.value = await api.notifications();
+});
 </script>
 
 <template>
@@ -50,6 +67,20 @@ const nav = [
             <p class="truncate text-base font-semibold text-ink sm:text-lg">Internship Lifecycle Control</p>
           </div>
           <div class="flex shrink-0 items-center gap-2 sm:gap-3">
+            <button
+              type="button"
+              class="relative h-10 rounded-md border border-slate-200 bg-white px-3 text-sm font-semibold text-ink transition hover:border-navy/30 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-navy/15"
+              aria-label="Buka notifikasi"
+              @click="notificationDrawerOpen = true"
+            >
+              Notif
+              <span
+                v-if="notificationCount"
+                class="absolute -right-2 -top-2 min-w-5 rounded-full bg-red-600 px-1.5 text-center text-xs font-bold leading-5 text-white"
+              >
+                {{ notificationCount > 99 ? '99+' : notificationCount }}
+              </span>
+            </button>
             <select class="control hidden w-36 sm:block">
               <option>HCM Staff</option>
               <option>HCM Leader</option>
@@ -73,5 +104,53 @@ const nav = [
         <RouterView />
       </main>
     </div>
+
+    <div
+      v-if="notificationDrawerOpen"
+      class="fixed inset-0 z-40 bg-slate-950/30"
+      aria-hidden="true"
+      @click="notificationDrawerOpen = false"
+    ></div>
+    <aside
+      class="fixed inset-y-0 right-0 z-50 flex w-full max-w-[420px] transform flex-col border-l border-slate-200 bg-white shadow-2xl transition-transform duration-200"
+      :class="notificationDrawerOpen ? 'translate-x-0' : 'translate-x-full'"
+      aria-label="Daftar notifikasi HCM"
+    >
+      <div class="flex items-start justify-between gap-4 border-b border-slate-200 p-5">
+        <div>
+          <p class="text-xs font-semibold uppercase text-success">Notifikasi HCM</p>
+          <h2 class="mt-1 text-lg font-semibold text-ink">{{ notificationCount }} notifikasi aktif</h2>
+        </div>
+        <button
+          type="button"
+          class="rounded-md border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-navy/15"
+          @click="notificationDrawerOpen = false"
+        >
+          Tutup
+        </button>
+      </div>
+      <div class="flex-1 space-y-3 overflow-y-auto p-5">
+        <div v-if="!notificationCount" class="rounded-lg border border-dashed border-slate-200 p-6 text-center">
+          <p class="text-sm font-semibold text-ink">Tidak ada notifikasi</p>
+          <p class="mt-1 text-sm text-slate-500">Semua reminder lifecycle sedang aman.</p>
+        </div>
+        <div
+          v-for="(item, index) in notifications"
+          :key="`${item.type ?? 'notif'}-${item.title}-${index}`"
+          class="rounded-lg border border-slate-200 p-4 shadow-sm"
+        >
+          <div class="flex items-start justify-between gap-3">
+            <p class="text-sm font-semibold leading-6 text-ink">{{ item.title }}</p>
+            <span
+              class="shrink-0 rounded-full px-2.5 py-1 text-xs font-bold ring-1"
+              :class="notificationSeverityClass(item.severity)"
+            >
+              {{ notificationSeverityLabel(item.severity) }}
+            </span>
+          </div>
+          <p class="mt-2 text-sm leading-6 text-slate-600">{{ item.description ?? item.type ?? '-' }}</p>
+        </div>
+      </div>
+    </aside>
   </div>
 </template>

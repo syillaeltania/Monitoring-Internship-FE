@@ -33,15 +33,5 @@ onMounted(async () => {
       <SimpleChart title="Magang per Tipe" type="pie" :data="dashboard.charts.byType" value-format="count" />
       <SimpleChart title="Cost per Bulan" type="line" :data="dashboard.charts.monthlyCost" value-format="currency" />
     </section>
-
-    <section class="panel p-5">
-      <h3 class="mb-4 text-sm font-semibold text-ink">Notifikasi</h3>
-      <div class="grid gap-3 md:grid-cols-2">
-        <div v-for="item in dashboard.notifications" :key="item.title" class="rounded-md border border-slate-200 p-4">
-          <p class="text-sm font-semibold text-ink">{{ item.title }}</p>
-          <p class="mt-1 text-xs text-slate-500">{{ item.description ?? item.type }}</p>
-        </div>
-      </div>
-    </section>
   </div>
 </template>

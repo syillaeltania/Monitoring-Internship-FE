@@ -1,4 +1,5 @@
 import axios from 'axios';
+import type { AppNotification } from '../utils/notifications';
 
 const http = axios.create({
   baseURL: import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api',
@@ -116,6 +117,7 @@ async function request<T>(path: string, fallback: T): Promise<T> {
 
 export const api = {
   dashboard: () => request('/dashboard', fallbackDashboard),
+  notifications: () => request<AppNotification[]>('/notifications', fallbackDashboard.notifications),
   interns: () => request<Intern[]>('/interns', fallbackInterns),
   createIntern: (payload: Partial<Intern>) => http.post<Intern>('/interns', payload),
   updateIntern: (id: string, payload: Partial<Intern> & { manualStatus?: Status | '' | null }) => http.put<Intern>(`/interns/${id}`, payload),
