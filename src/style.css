@@ -1,18 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 html {
-  background: #202020;
-  color: #1F2937;
+  background: #0D1429;
+  color: #10162A;
   font-family:
-    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    "DM Sans", "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
 }
 
 body {
   min-height: 100vh;
   min-width: 320px;
-  background: #202020;
+  background: #0D1429;
 }
 
 button,
@@ -41,7 +43,7 @@ button:not(:disabled):active {
 }
 
 .panel {
-  @apply rounded-2xl border border-[#E5EAF0] bg-white shadow-panel;
+  @apply rounded-[24px] border border-[#D6CEC3] bg-[#FBF8F1];
   transition:
     box-shadow 220ms ease,
     transform 220ms ease,
@@ -50,17 +52,17 @@ button:not(:disabled):active {
 }
 
 .control {
-  @apply h-11 w-full max-w-full rounded-xl border border-[#DDE5EE] bg-white px-3 text-sm text-ink outline-none transition focus:border-[#1D4A82] focus:ring-2 focus:ring-[#1D4A82]/10;
+  @apply h-11 w-full max-w-full rounded-[14px] border border-[#D6CEC3] bg-[#FBF8F1] px-3 text-sm text-ink outline-none transition placeholder:text-[#77736F] focus:border-[#3158E8] focus:ring-2 focus:ring-[#3158E8]/10;
 }
 
 .action-primary {
-  @apply rounded-xl bg-[#0B2D5C] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#1D4A82] hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60;
+  @apply rounded-full bg-[#0D1429] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#18213B] disabled:cursor-not-allowed disabled:opacity-60;
 }
 
 .action-success {
-  @apply rounded-xl bg-success px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60;
+  @apply rounded-full bg-[#61B982] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#4FA471] disabled:cursor-not-allowed disabled:opacity-60;
 }
 
 .action-secondary {
-  @apply rounded-xl border border-[#DDE5EE] bg-white px-4 py-2.5 text-sm font-semibold text-ink shadow-sm hover:border-[#1D4A82]/25 hover:bg-slate-50 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50;
+  @apply rounded-full border border-[#D6CEC3] bg-[#FBF8F1] px-4 py-2.5 text-sm font-semibold text-ink hover:border-[#3158E8]/40 hover:bg-white disabled:cursor-not-allowed disabled:opacity-50;
 }

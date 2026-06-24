@@ -35,7 +35,7 @@ const option = computed(() => {
         left: 'center',
         itemWidth: 10,
         itemHeight: 10,
-        textStyle: { color: '#475569', fontSize: 12 },
+        textStyle: { color: '#77736F', fontSize: 12 },
       },
       series: [
         {
@@ -66,22 +66,22 @@ const option = computed(() => {
         margin: props.type === 'line' ? 16 : 8,
         width: props.type === 'line' ? 86 : 72,
         overflow: 'truncate',
-        color: '#6b7280',
+        color: '#77736F',
       },
     },
     yAxis: {
       type: 'value',
       axisLabel: {
         formatter: (value: number) => (valueFormat.value === 'currency' ? formatCompactNumber(value) : formatChartValue(value, valueFormat.value)),
-        color: '#6b7280',
+        color: '#77736F',
       },
-      splitLine: { lineStyle: { color: '#e2e8f0' } },
+      splitLine: { lineStyle: { color: '#D6CEC3' } },
     },
     series: [
       {
         type: props.type,
         data: props.data.map((item) => item.value),
-        color: props.type === 'line' ? '#2563eb' : '#1f9d6a',
+        color: props.type === 'line' ? '#3158E8' : '#3158E8',
         smooth: props.type === 'line',
         symbolSize: props.type === 'line' ? 7 : undefined,
         lineStyle: props.type === 'line' ? { width: 3 } : undefined,

@@ -8,8 +8,8 @@ test('resolves SaaS widget tones with stable fallback', () => {
 });
 
 test('provides colored widget and text classes for each supported tone', () => {
-  assert.match(toneWidgetClass('cyan'), /cyan/);
-  assert.match(toneWidgetClass('red'), /red/);
-  assert.match(toneTextClass('indigo'), /indigo/);
-  assert.match(toneTextClass('orange'), /amber/);
+  assert.match(toneWidgetClass('cyan'), /3158E8|blue/);
+  assert.match(toneWidgetClass('red'), /FF684F|coral/);
+  assert.match(toneTextClass('indigo'), /3158E8|blue/);
+  assert.match(toneTextClass('orange'), /8A6A00/);
 });

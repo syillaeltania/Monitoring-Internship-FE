@@ -153,25 +153,22 @@ onMounted(async () => {
 
 <template>
   <PageHeader title="Pemetaan Organisasi" subtitle="Struktur penempatan magang aktif berdasarkan divisi, tim, leader, dan peserta." />
-  <p v-if="mappingFeedback" class="mb-4 rounded-md border border-blue-100 bg-blue-50 px-4 py-3 text-sm font-semibold text-navy">
+  <p v-if="mappingFeedback" class="mb-4 rounded-[14px] border border-[#3158E8]/20 bg-[#EEF2FF] px-4 py-3 text-sm font-semibold text-[#3158E8]">
     {{ mappingFeedback }}
   </p>
 
-  <section
-    class="overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm"
-    style="background-image: linear-gradient(#e8edf5 1px, transparent 1px), linear-gradient(90deg, #e8edf5 1px, transparent 1px); background-size: 28px 28px;"
-  >
+  <section class="overflow-x-auto rounded-[24px] border border-[#D6CEC3] bg-[#FBF8F1]">
     <div class="min-w-[1120px] space-y-8 p-6">
       <div class="rounded-md border border-slate-200 bg-white/95 p-5 shadow-sm">
         <div class="mb-5 flex items-center justify-between">
           <div>
-            <p class="text-xs font-semibold uppercase text-slate-500">Total resources</p>
+            <p class="text-xs font-semibold uppercase text-[#77736F]">Total resources</p>
             <p class="text-3xl font-bold text-ink">{{ totalResources }}</p>
           </div>
-          <div class="flex flex-wrap justify-end gap-3 text-xs text-slate-600">
-            <span class="inline-flex items-center gap-2"><i class="h-3 w-3 rounded-sm bg-cyan-50 ring-1 ring-slate-300"></i>Magang Instansi</span>
-            <span class="inline-flex items-center gap-2"><i class="h-3 w-3 rounded-sm bg-emerald-50 ring-1 ring-slate-300"></i>Magang Profesional</span>
-            <span class="inline-flex items-center gap-2"><i class="h-3 w-3 rounded-sm bg-yellow-100 ring-1 ring-slate-300"></i>Selesai <= 30 hari</span>
+          <div class="flex flex-wrap justify-end gap-3 text-xs text-[#77736F]">
+            <span class="inline-flex items-center gap-2"><i class="h-3 w-3 rounded-sm bg-[#EEF2FF] ring-1 ring-[#3158E8]/20"></i>Magang Instansi</span>
+            <span class="inline-flex items-center gap-2"><i class="h-3 w-3 rounded-sm bg-[#ECF8EF] ring-1 ring-[#A8E9BE]"></i>Magang Profesional</span>
+            <span class="inline-flex items-center gap-2"><i class="h-3 w-3 rounded-sm bg-[#FFF5C8] ring-1 ring-[#F7D95D]"></i>Selesai <= 30 hari</span>
           </div>
         </div>
 

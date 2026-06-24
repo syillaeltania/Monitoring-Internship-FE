@@ -16,7 +16,7 @@ export const notificationSeverityLabel = (severity: NotificationSeverity) => {
 };
 
 export const notificationSeverityClass = (severity: NotificationSeverity) => {
-  if (severity === 'danger') return 'bg-red-50 text-red-700 ring-red-100';
-  if (severity === 'warning') return 'bg-amber-50 text-amber-700 ring-amber-100';
-  return 'bg-blue-50 text-blue-700 ring-blue-100';
+  if (severity === 'danger') return 'bg-[#FFE8E2] text-[#C64632] ring-[#FFB3A4]';
+  if (severity === 'warning') return 'bg-[#FFF5C8] text-[#8A6A00] ring-[#F7D95D]';
+  return 'bg-[#EEF2FF] text-[#3158E8] ring-[#3158E8]/20';
 };

@@ -7,38 +7,38 @@ export const resolveTone = (tone?: string): ToneKey => (tone && toneSet.has(tone
 
 export const toneWidgetClass = (tone?: string) =>
   ({
-    navy: 'bg-blue-50 border-blue-100',
-    green: 'bg-emerald-50 border-emerald-100',
-    orange: 'bg-amber-50 border-amber-100',
-    red: 'bg-red-50 border-red-100',
-    cyan: 'bg-cyan-50 border-cyan-100',
-    indigo: 'bg-indigo-50 border-indigo-100',
-    slate: 'bg-slate-50 border-slate-200',
-    purple: 'bg-violet-50 border-violet-100',
+    navy: 'bg-[#F5F0E7] border-[#D6CEC3]',
+    green: 'bg-[#ECF8EF] border-[#A8E9BE]',
+    orange: 'bg-[#FFF5C8] border-[#F7D95D]',
+    red: 'bg-[#FFF0EC] border-[#FF684F]/35',
+    cyan: 'bg-[#EEF2FF] border-[#3158E8]/20',
+    indigo: 'bg-[#EEF2FF] border-[#3158E8]/20',
+    slate: 'bg-[#F5F0E7] border-[#D6CEC3]',
+    purple: 'bg-[#F4F0FF] border-[#B9A0F6]/40',
   })[resolveTone(tone)];
 
 export const toneTextClass = (tone?: string) =>
   ({
-    navy: 'text-navy',
-    green: 'text-success',
-    orange: 'text-amber-600',
-    red: 'text-danger',
-    cyan: 'text-cyan-700',
-    indigo: 'text-indigo-700',
-    slate: 'text-slate-700',
-    purple: 'text-violet-700',
+    navy: 'text-[#10162A]',
+    green: 'text-[#2F7F52]',
+    orange: 'text-[#8A6A00]',
+    red: 'text-[#C64632]',
+    cyan: 'text-[#3158E8]',
+    indigo: 'text-[#3158E8]',
+    slate: 'text-[#77736F]',
+    purple: 'text-[#6F54C8]',
   })[resolveTone(tone)];
 
 export const toneAccentClass = (tone?: string) =>
   ({
-    navy: 'bg-navy',
-    green: 'bg-success',
-    orange: 'bg-amber-500',
-    red: 'bg-danger',
-    cyan: 'bg-cyan-500',
-    indigo: 'bg-indigo-600',
-    slate: 'bg-slate-500',
-    purple: 'bg-violet-600',
+    navy: 'bg-[#0D1429]',
+    green: 'bg-[#8CE0AE]',
+    orange: 'bg-[#F7D95D]',
+    red: 'bg-[#FF684F]',
+    cyan: 'bg-[#3158E8]',
+    indigo: 'bg-[#3158E8]',
+    slate: 'bg-[#77736F]',
+    purple: 'bg-[#B9A0F6]',
   })[resolveTone(tone)];
 
-export const chartPalette = ['#1f9d6a', '#2563eb', '#0891b2', '#d98c00', '#7c3aed', '#c2413a'];
+export const chartPalette = ['#3158E8', '#8CE0AE', '#B9A0F6', '#F7D95D', '#FF684F', '#77736F'];

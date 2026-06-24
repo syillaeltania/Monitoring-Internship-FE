@@ -156,20 +156,20 @@ watch(filters, async () => {
   </div>
 
   <section class="mb-6 grid gap-4 xl:grid-cols-4">
-    <article class="panel border-cyan-100 bg-cyan-50 p-5">
-      <p class="text-xs font-semibold uppercase text-cyan-700">Data</p>
+    <article class="panel border-[#3158E8]/20 bg-[#EEF2FF] p-5">
+      <p class="text-xs font-semibold uppercase text-[#3158E8]">Data</p>
       <h2 class="mt-2 text-lg font-semibold text-ink">{{ selectedMonthLabel }} {{ filters.year }}</h2>
-      <div class="mt-4 space-y-3 text-sm text-slate-600">
+      <div class="mt-4 space-y-3 text-sm text-[#77736F]">
         <div class="flex justify-between gap-3"><span>Peserta terhitung</span><strong class="text-ink">{{ participantCount }}</strong></div>
         <div class="flex justify-between gap-3"><span>Filter tipe</span><strong class="text-ink">{{ filters.type || 'Semua' }}</strong></div>
         <div class="flex justify-between gap-3"><span>Filter divisi</span><strong class="text-ink">{{ filters.division || 'Semua' }}</strong></div>
       </div>
     </article>
 
-    <article class="panel border-emerald-100 bg-emerald-50 p-5">
-      <p class="text-xs font-semibold uppercase text-success">Information</p>
+    <article class="panel border-[#A8E9BE] bg-[#ECF8EF] p-5">
+      <p class="text-xs font-semibold uppercase text-[#2F7F52]">Information</p>
       <h2 class="mt-2 text-lg font-semibold text-ink">{{ rupiah(data.total) }}</h2>
-      <div class="mt-4 space-y-3 text-sm text-slate-600">
+      <div class="mt-4 space-y-3 text-sm text-[#77736F]">
         <div class="flex justify-between gap-3"><span>Average cost</span><strong class="text-ink">{{ rupiah(averageCost) }}</strong></div>
         <div v-for="item in typeSummary" :key="item.name" class="flex justify-between gap-3">
           <span>{{ item.name }}</span>
@@ -178,11 +178,11 @@ watch(filters, async () => {
       </div>
     </article>
 
-    <article class="panel border-indigo-100 bg-indigo-50 p-5">
-      <p class="text-xs font-semibold uppercase text-indigo-700">Knowledge</p>
+    <article class="panel border-[#B9A0F6]/40 bg-[#F4F0FF] p-5">
+      <p class="text-xs font-semibold uppercase text-[#6F54C8]">Knowledge</p>
       <h2 class="mt-2 text-lg font-semibold text-ink">{{ topDivision?.name ?? '-' }}</h2>
-      <p class="mt-1 text-sm text-slate-500">Divisi dengan cost terbesar: {{ rupiah(topDivision?.value ?? 0) }}</p>
-      <div class="mt-4 space-y-2 text-sm text-slate-600">
+      <p class="mt-1 text-sm text-[#77736F]">Divisi dengan cost terbesar: {{ rupiah(topDivision?.value ?? 0) }}</p>
+      <div class="mt-4 space-y-2 text-sm text-[#77736F]">
         <p v-for="row in highCostRows" :key="row.id" class="flex justify-between gap-3">
           <span>{{ row.intern?.name }}</span>
           <strong class="text-ink">{{ rupiah(row.totalMonthlyCost ?? 0) }}</strong>
@@ -190,10 +190,10 @@ watch(filters, async () => {
       </div>
     </article>
 
-    <article class="panel border-amber-100 bg-amber-50 p-5">
-      <p class="text-xs font-semibold uppercase text-amber-700">Wisdom</p>
+    <article class="panel border-[#F7D95D] bg-[#FFF5C8] p-5">
+      <p class="text-xs font-semibold uppercase text-[#8A6A00]">Wisdom</p>
       <h2 class="mt-2 text-lg font-semibold text-ink">Rekomendasi HCM</h2>
-      <ul class="mt-4 space-y-3 text-sm text-slate-600">
+      <ul class="mt-4 space-y-3 text-sm text-[#77736F]">
         <li v-for="item in wisdomItems" :key="item" class="border-l-2 border-success pl-3">{{ item }}</li>
       </ul>
     </article>
@@ -203,14 +203,14 @@ watch(filters, async () => {
     <div class="mb-4 flex items-center justify-between gap-3">
       <div>
         <h2 class="text-sm font-semibold text-ink">Edit Cost</h2>
-        <p class="mt-1 text-sm text-slate-500">{{ editingCost.Peserta }} - {{ editingCost.Divisi }} - {{ editingCost.month }}/{{ editingCost.year }}</p>
+        <p class="mt-1 text-sm text-[#77736F]">{{ editingCost.Peserta }} - {{ editingCost.Divisi }} - {{ editingCost.month }}/{{ editingCost.year }}</p>
       </div>
       <button class="action-secondary px-3 py-2" @click="editingCost = null">Tutup</button>
     </div>
     <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       <input v-model.number="costForm.baseSalary" class="control" type="number" min="0" placeholder="Gaji Pokok" />
       <input v-model.number="costForm.totalMealAllowance" class="control" type="number" min="0" placeholder="Uang Makan" />
-      <div class="rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-ink">
+      <div class="rounded-[14px] border border-[#D6CEC3] bg-[#F5F0E7] px-4 py-3 text-sm font-semibold text-ink">
         Total {{ rupiah(Number(costForm.baseSalary || 0) + Number(costForm.totalMealAllowance || 0)) }}
       </div>
     </div>
@@ -218,10 +218,10 @@ watch(filters, async () => {
       <button class="action-success" :disabled="saving" @click="saveCost">
         {{ saving ? 'Menyimpan...' : 'Simpan Cost' }}
       </button>
-      <p v-if="feedback" class="text-sm text-slate-600">{{ feedback }}</p>
+      <p v-if="feedback" class="text-sm text-[#77736F]">{{ feedback }}</p>
     </div>
   </section>
-  <p v-else-if="feedback" class="mb-3 text-sm text-slate-600">{{ feedback }}</p>
+  <p v-else-if="feedback" class="mb-3 text-sm text-[#77736F]">{{ feedback }}</p>
 
   <DataTable
     :columns="['Peserta', 'Tipe', 'Divisi', 'Gaji Pokok', 'Uang Makan', 'Total', 'Aksi']"

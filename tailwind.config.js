@@ -4,15 +4,21 @@ export default {
   theme: {
     extend: {
       colors: {
-        navy: '#0f2f5f',
-        ink: '#1F2937',
-        mist: '#EEF3F7',
-        success: '#1f9d6a',
-        warning: '#d98c00',
-        danger: '#c2413a',
+        navy: '#0D1429',
+        ink: '#10162A',
+        mist: '#F5F0E7',
+        cream: '#FBF8F1',
+        muted: '#77736F',
+        warmborder: '#D6CEC3',
+        success: '#61B982',
+        warning: '#D3A91D',
+        danger: '#FF684F',
+        royal: '#3158E8',
+        mint: '#8CE0AE',
+        lavender: '#B9A0F6',
       },
       boxShadow: {
-        panel: '0 4px 16px rgba(15, 23, 42, 0.06)',
+        panel: '0 12px 32px rgba(16, 22, 42, 0.10)',
       },
     },
   },

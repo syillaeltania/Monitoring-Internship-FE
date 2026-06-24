@@ -55,13 +55,13 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="min-h-screen min-w-0 bg-[#0B2D5C] p-2 sm:p-2 lg:p-4">
+  <div class="min-h-screen min-w-0 bg-[#0D1429] p-2 sm:p-3 lg:p-4">
     <div
       class="flex min-h-[calc(100vh-32px)] flex-col gap-4 sm:min-h-[calc(100vh-48px)] sm:gap-6 lg:min-h-[calc(100vh-64px)] lg:flex-row lg:gap-6"
     >
       <!-- Sidebar: flat, no floating card treatment -->
       <aside
-        class="hidden w-[260px] shrink-0 bg-[#0B2D5C] text-white lg:block"
+        class="hidden w-[260px] shrink-0 bg-[#0D1429] text-white lg:block"
       >
         <div class="border-b border-white/10 px-3 py-6">
           <p class="text-xs uppercase tracking-[0.18em] text-white/55">
@@ -96,7 +96,7 @@ onMounted(async () => {
                   class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold transition duration-200"
                   :class="
                     isActive
-                      ? 'bg-[#1D4A82] text-white'
+                      ? 'bg-[#3158E8]/18 text-white'
                       : 'text-white/70 hover:bg-white/10 hover:text-white'
                   "
                   @click="navigate"
@@ -124,14 +124,14 @@ onMounted(async () => {
 
       <!-- Main content: floating workspace -->
       <div
-        class="flex min-w-0 flex-1 flex-col rounded-[24px] bg-white px-4 py-5 shadow-[0_12px_32px_rgba(15,23,42,0.08)] sm:px-6 sm:py-6 lg:px-8 lg:py-8"
+        class="flex min-w-0 flex-1 flex-col rounded-[28px] bg-[#FBF8F1] px-4 py-5 shadow-[0_12px_32px_rgba(16,22,42,0.10)] sm:px-6 sm:py-6 lg:px-8 lg:py-8"
       >
         <!-- Header: integrated, not a separate card -->
         <header
-          class="flex min-h-16 items-center justify-between gap-3 border-b border-[#E5EAF0] pb-5 sm:gap-4"
+          class="flex min-h-16 items-center justify-between gap-3 border-b border-[#D6CEC3] pb-5 sm:gap-4"
         >
           <div class="min-w-0">
-            <p class="text-xs font-semibold uppercase text-success">
+            <p class="text-xs font-semibold uppercase text-[#61B982]">
               Neuron HCM
             </p>
             <p class="truncate text-base font-semibold text-ink sm:text-xl">
@@ -142,7 +142,7 @@ onMounted(async () => {
           <div class="flex shrink-0 items-center gap-2 sm:gap-3">
             <button
               type="button"
-              class="relative h-10 rounded-xl border border-[#DDE5EE] bg-white px-3 text-sm font-semibold text-ink transition hover:border-[#1D4A82]/25 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#1D4A82]/15"
+              class="relative h-10 rounded-full border border-[#D6CEC3] bg-[#FBF8F1] px-3 text-sm font-semibold text-ink transition hover:border-[#3158E8]/35 hover:bg-white focus:outline-none focus:ring-2 focus:ring-[#3158E8]/15"
               aria-label="Buka notifikasi"
               @click="notificationDrawerOpen = true"
             >
@@ -150,7 +150,7 @@ onMounted(async () => {
 
               <span
                 v-if="notificationCount"
-                class="absolute -right-2 -top-2 min-w-5 rounded-full bg-red-600 px-1.5 text-center text-xs font-bold leading-5 text-white"
+                class="absolute -right-2 -top-2 min-w-5 rounded-full bg-[#FF684F] px-1.5 text-center text-xs font-bold leading-5 text-white"
               >
                 {{ notificationCount > 99 ? '99+' : notificationCount }}
               </span>
@@ -162,7 +162,7 @@ onMounted(async () => {
             </select>
 
             <div
-              class="h-10 w-10 shrink-0 rounded-full bg-success text-center text-sm font-bold leading-10 text-white"
+              class="h-10 w-10 shrink-0 rounded-full bg-[#8CE0AE] text-center text-sm font-bold leading-10 text-[#10162A]"
             >
               HC
             </div>
@@ -171,14 +171,14 @@ onMounted(async () => {
 
         <!-- Mobile navigation -->
         <nav
-          class="my-4 flex gap-2 overflow-x-auto border-b border-[#E5EAF0] pb-4 lg:hidden"
+          class="my-4 flex gap-2 overflow-x-auto border-b border-[#D6CEC3] pb-4 lg:hidden"
         >
           <RouterLink
             v-for="[path, label] in nav"
             :key="path"
             :to="path"
-            class="shrink-0 rounded-xl px-3 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-navy"
-            active-class="bg-[#0B2D5C] text-white hover:bg-[#0B2D5C] hover:text-white"
+            class="shrink-0 rounded-xl px-3 py-2 text-sm font-semibold text-[#77736F] transition hover:bg-[#F5F0E7] hover:text-ink"
+            active-class="bg-[#0D1429] text-white hover:bg-[#0D1429] hover:text-white"
           >
             {{ label }}
           </RouterLink>
@@ -195,20 +195,20 @@ onMounted(async () => {
   <!-- Notification overlay -->
   <div
     v-if="notificationDrawerOpen"
-    class="fixed inset-0 z-40 bg-slate-950/30"
+    class="fixed inset-0 z-40 bg-[#0D1429]/55"
     aria-hidden="true"
     @click="notificationDrawerOpen = false"
   ></div>
 
   <!-- Notification drawer -->
   <aside
-    class="fixed inset-y-0 right-0 z-50 flex w-full max-w-[420px] transform flex-col rounded-l-3xl border-l border-slate-200 bg-white shadow-panel transition-transform duration-200"
+    class="fixed inset-y-0 right-0 z-50 flex w-full max-w-[420px] transform flex-col rounded-l-3xl border-l border-[#D6CEC3] bg-[#FBF8F1] shadow-panel transition-transform duration-200"
     :class="notificationDrawerOpen ? 'translate-x-0' : 'translate-x-full'"
     aria-label="Daftar notifikasi HCM"
   >
-    <div class="flex items-start justify-between gap-4 border-b border-slate-200 p-5">
+    <div class="flex items-start justify-between gap-4 border-b border-[#D6CEC3] p-5">
       <div>
-        <p class="text-xs font-semibold uppercase text-success">
+        <p class="text-xs font-semibold uppercase text-[#61B982]">
           Notifikasi HCM
         </p>
         <h2 class="mt-1 text-lg font-semibold text-ink">
