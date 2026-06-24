@@ -2,6 +2,7 @@
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import DataTable from '../components/DataTable.vue';
 import PageHeader from '../components/PageHeader.vue';
+import StatCard from '../components/StatCard.vue';
 import { api, type Status } from '../services/api';
 import { rupiah } from '../utils/format';
 import { divisionCategories } from '../utils/internFilters';
@@ -181,7 +182,7 @@ onMounted(loadData);
     <section class="panel p-5">
       <h3 class="text-sm font-semibold text-ink">Import Excel</h3>
       <p class="mt-2 text-sm text-slate-500">Gunakan saat perlu reload data dari workbook master.</p>
-      <button class="mt-4 rounded-md bg-navy px-4 py-2 text-sm font-semibold text-white" @click="importExcel">Import Workbook</button>
+      <button class="action-primary mt-4" @click="importExcel">Import Workbook</button>
       <p v-if="status" class="mt-3 text-sm text-slate-600">{{ status }}</p>
     </section>
 
@@ -192,8 +193,8 @@ onMounted(loadData);
           <p class="mt-2 text-sm text-slate-500">{{ selectedKind.description }}</p>
         </div>
         <div class="flex flex-wrap gap-3">
-          <button class="rounded-md border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-ink" @click="exportCsv">Excel/CSV</button>
-          <button class="rounded-md border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-ink" @click="exportPdf">PDF</button>
+          <button class="action-secondary" @click="exportCsv">Excel/CSV</button>
+          <button class="action-secondary" @click="exportPdf">PDF</button>
         </div>
       </div>
 
@@ -230,26 +231,11 @@ onMounted(loadData);
   </div>
 
   <section class="mb-5 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
-    <div class="panel p-5">
-      <p class="text-sm font-medium text-slate-500">Data Tampil</p>
-      <p class="mt-3 text-3xl font-semibold text-navy">{{ reportRows.length }}</p>
-    </div>
-    <div class="panel p-5">
-      <p class="text-sm font-medium text-slate-500">Peserta Terfilter</p>
-      <p class="mt-3 text-3xl font-semibold text-ink">{{ summary.total }}</p>
-    </div>
-    <div class="panel p-5">
-      <p class="text-sm font-medium text-slate-500">Instansi</p>
-      <p class="mt-3 text-3xl font-semibold text-success">{{ summary.institution }}</p>
-    </div>
-    <div class="panel p-5">
-      <p class="text-sm font-medium text-slate-500">Profesional</p>
-      <p class="mt-3 text-3xl font-semibold text-blue-600">{{ summary.professional }}</p>
-    </div>
-    <div class="panel p-5">
-      <p class="text-sm font-medium text-slate-500">Aktif</p>
-      <p class="mt-3 text-3xl font-semibold text-success">{{ summary.active }}</p>
-    </div>
+    <StatCard label="Data Tampil" :value="reportRows.length" tone="navy" />
+    <StatCard label="Peserta Terfilter" :value="summary.total" tone="slate" />
+    <StatCard label="Instansi" :value="summary.institution" tone="green" />
+    <StatCard label="Profesional" :value="summary.professional" tone="indigo" />
+    <StatCard label="Aktif" :value="summary.active" tone="cyan" />
   </section>
 
   <DataTable :columns="reportColumns" :rows="reportRows" :loading="loading" empty-message="Tidak ada data report yang sesuai filter." />

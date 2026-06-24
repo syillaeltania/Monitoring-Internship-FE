@@ -20,18 +20,18 @@ onMounted(async () => {
     <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
       <StatCard label="Total Aktif" :value="dashboard.summary.activeTotal" />
       <StatCard label="Instansi Aktif" :value="dashboard.summary.activeInstitution" tone="green" />
-      <StatCard label="Profesional Aktif" :value="dashboard.summary.activeProfessional" />
-      <StatCard label="Peserta Selesai" :value="dashboard.summary.completedTotal" />
-      <StatCard label="Rencana Magang" :value="dashboard.summary.plannedTotal" />
+      <StatCard label="Profesional Aktif" :value="dashboard.summary.activeProfessional" tone="indigo" />
+      <StatCard label="Peserta Selesai" :value="dashboard.summary.completedTotal" tone="slate" />
+      <StatCard label="Rencana Magang" :value="dashboard.summary.plannedTotal" tone="cyan" />
       <StatCard label="Selesai 30 Hari" :value="dashboard.summary.endingIn30Days" tone="orange" />
       <StatCard label="Tim Berisiko" :value="dashboard.summary.riskyTeams" tone="red" />
       <StatCard label="Cost Bulan Ini" :value="rupiah(dashboard.summary.currentMonthCost)" tone="green" />
     </section>
 
     <section class="grid gap-4 xl:grid-cols-3">
-      <SimpleChart title="Magang per Divisi" type="bar" :data="dashboard.charts.byDivision" value-format="count" />
-      <SimpleChart title="Magang per Tipe" type="pie" :data="dashboard.charts.byType" value-format="count" />
-      <SimpleChart title="Cost per Bulan" type="line" :data="dashboard.charts.monthlyCost" value-format="currency" />
+      <SimpleChart title="Magang per Divisi" type="bar" :data="dashboard.charts.byDivision" value-format="count" tone="green" />
+      <SimpleChart title="Magang per Tipe" type="pie" :data="dashboard.charts.byType" value-format="count" tone="indigo" />
+      <SimpleChart title="Cost per Bulan" type="line" :data="dashboard.charts.monthlyCost" value-format="currency" tone="cyan" />
     </section>
   </div>
 </template>

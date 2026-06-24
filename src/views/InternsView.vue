@@ -202,13 +202,13 @@ watch(division, () => {
 
 <template>
   <PageHeader title="Master Data Peserta" subtitle="CRUD dan monitoring data peserta magang instansi maupun profesional.">
-    <button class="rounded-md bg-navy px-4 py-2 text-sm font-semibold text-white" @click="openCreate">Tambah Peserta</button>
+    <button class="action-primary" @click="openCreate">Tambah Peserta</button>
   </PageHeader>
 
   <section v-if="isFormOpen" class="panel mb-4 p-5">
     <div class="mb-4 flex items-center justify-between gap-3">
       <h2 class="text-sm font-semibold text-ink">{{ editingId ? 'Edit Peserta' : 'Tambah Peserta' }}</h2>
-      <button class="rounded-md border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600" @click="isFormOpen = false">Tutup</button>
+      <button class="action-secondary px-3 py-2" @click="isFormOpen = false">Tutup</button>
     </div>
     <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       <input v-model="form.name" class="control" placeholder="Nama" />
@@ -234,10 +234,10 @@ watch(division, () => {
       <textarea v-model="form.notes" class="control min-h-24 md:col-span-2" placeholder="Notes" />
     </div>
     <div class="mt-4 flex flex-wrap items-center gap-3">
-      <button class="rounded-md bg-success px-4 py-2 text-sm font-semibold text-white disabled:opacity-60" :disabled="saving" @click="submitForm">
+      <button class="action-success" :disabled="saving" @click="submitForm">
         {{ saving ? 'Menyimpan...' : editingId ? 'Simpan Perubahan' : 'Simpan Peserta' }}
       </button>
-      <button v-if="editingId" class="rounded-md border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700" @click="openCreate">Buat Baru</button>
+      <button v-if="editingId" class="action-secondary" @click="openCreate">Buat Baru</button>
       <p v-if="feedback" class="text-sm text-slate-600">{{ feedback }}</p>
     </div>
   </section>
@@ -283,8 +283,8 @@ watch(division, () => {
     <template #Status="{ row }"><StatusBadge :value="String(row.Status)" /></template>
     <template #Aksi="{ row }">
       <div class="flex gap-2">
-        <button class="rounded-md border border-slate-200 px-3 py-1.5 text-xs font-semibold text-navy" @click="openEdit(row)">Edit</button>
-        <button class="rounded-md border border-red-100 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700" @click="deleteIntern(row)">Hapus</button>
+        <button class="action-secondary px-3 py-1.5 text-xs text-navy" @click="openEdit(row)">Edit</button>
+        <button class="rounded-md border border-red-100 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 shadow-sm hover:-translate-y-0.5 hover:bg-red-100 hover:shadow-md" @click="deleteIntern(row)">Hapus</button>
       </div>
     </template>
   </DataTable>

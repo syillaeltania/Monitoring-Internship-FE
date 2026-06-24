@@ -116,7 +116,7 @@ onMounted(loadPlans);
 
 <template>
   <PageHeader title="Rencana Magang" subtitle="Peserta diterima atau sudah dikirim surat penerimaan namun belum join.">
-    <button class="rounded-md bg-navy px-4 py-2 text-sm font-semibold text-white" @click="openCreate">Tambah Peserta</button>
+    <button class="action-primary" @click="openCreate">Tambah Peserta</button>
   </PageHeader>
 
   <section class="panel mb-4 p-4">
@@ -153,7 +153,7 @@ onMounted(loadPlans);
     </template>
     <template #Aksi="{ row }">
       <button
-        class="rounded-md border px-3 py-1.5 text-xs font-semibold transition"
+        class="rounded-md border px-3 py-1.5 text-xs font-semibold transition duration-200"
         :class="row._isCompleted ? 'border-white/40 text-white hover:bg-white/10' : 'border-slate-200 text-ink hover:bg-slate-50'"
         @click="openEdit(row)"
       >
@@ -162,8 +162,8 @@ onMounted(loadPlans);
     </template>
   </DataTable>
 
-  <div v-if="editingPlan" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 p-4">
-    <form class="w-full max-w-md rounded-lg bg-white p-5 shadow-xl" @submit.prevent="savePlanStatus">
+  <div v-if="editingPlan" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 p-4 backdrop-blur-sm">
+    <form class="w-full max-w-md rounded-lg bg-white p-5 shadow-xl transition duration-200" @submit.prevent="savePlanStatus">
       <div class="mb-5">
         <h2 class="text-lg font-semibold text-ink">Edit Status Rencana</h2>
         <p class="mt-1 text-sm text-slate-500">{{ editingPlan.name }} · {{ editingPlan.targetDivision || 'Belum mapping divisi' }} / {{ editingPlan.targetTeam || 'Belum mapping tim' }}</p>
@@ -176,16 +176,16 @@ onMounted(loadPlans);
         ON GOING tampil otomatis jika tanggal berjalan sudah berada di periode masuk sampai selesai.
       </p>
       <div class="mt-6 flex justify-end gap-3">
-        <button type="button" class="rounded-md border border-slate-200 px-4 py-2 text-sm font-semibold text-ink" @click="closeEdit">Batal</button>
-        <button type="submit" class="rounded-md bg-navy px-4 py-2 text-sm font-semibold text-white disabled:opacity-60" :disabled="isSaving">
+        <button type="button" class="action-secondary" @click="closeEdit">Batal</button>
+        <button type="submit" class="action-primary" :disabled="isSaving">
           {{ isSaving ? 'Menyimpan...' : 'Simpan' }}
         </button>
       </div>
     </form>
   </div>
 
-  <div v-if="showCreateForm" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 p-4">
-    <form class="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-lg bg-white p-5 shadow-xl" @submit.prevent="createPlan">
+  <div v-if="showCreateForm" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 p-4 backdrop-blur-sm">
+    <form class="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-lg bg-white p-5 shadow-xl transition duration-200" @submit.prevent="createPlan">
       <div class="mb-5">
         <h2 class="text-lg font-semibold text-ink">Tambah Peserta Rencana</h2>
         <p class="mt-1 text-sm text-slate-500">Status awal akan tersimpan sebagai WAITING JOIN.</p>
@@ -257,8 +257,8 @@ onMounted(loadPlans);
       </div>
 
       <div class="mt-6 flex justify-end gap-3">
-        <button type="button" class="rounded-md border border-slate-200 px-4 py-2 text-sm font-semibold text-ink" @click="closeCreate">Batal</button>
-        <button type="submit" class="rounded-md bg-navy px-4 py-2 text-sm font-semibold text-white disabled:opacity-60" :disabled="isCreating">
+        <button type="button" class="action-secondary" @click="closeCreate">Batal</button>
+        <button type="submit" class="action-primary" :disabled="isCreating">
           {{ isCreating ? 'Menyimpan...' : 'Simpan' }}
         </button>
       </div>

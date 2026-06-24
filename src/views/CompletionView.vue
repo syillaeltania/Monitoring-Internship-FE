@@ -117,12 +117,12 @@ onMounted(loadChecklist);
   >
     <template #Status="{ row }"><StatusBadge :value="String(row.Status)" /></template>
     <template #Aksi="{ row }">
-      <button class="rounded-md border border-slate-200 px-3 py-1.5 text-xs font-semibold text-navy" @click="selectChecklist(row)">Edit</button>
+      <button class="action-secondary px-3 py-1.5 text-xs text-navy" @click="selectChecklist(row)">Edit</button>
     </template>
   </DataTable>
 
-  <div v-if="selectedChecklist" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 p-4">
-    <form class="w-full max-w-2xl rounded-lg bg-white p-5 shadow-xl" @submit.prevent="saveChecklist">
+  <div v-if="selectedChecklist" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 p-4 backdrop-blur-sm">
+    <form class="w-full max-w-2xl rounded-lg bg-white p-5 shadow-xl transition duration-200" @submit.prevent="saveChecklist">
       <div class="mb-5 flex items-start justify-between gap-3">
         <div>
           <h2 class="text-lg font-semibold text-ink">Edit Checklist Penyelesaian</h2>
@@ -136,7 +136,7 @@ onMounted(loadChecklist);
       </div>
 
       <div class="grid max-h-[52vh] gap-3 overflow-y-auto pr-1 sm:grid-cols-2">
-        <label v-for="item in checklistItems" :key="item.key" class="flex items-start gap-3 rounded-md border border-slate-200 p-3 text-sm font-semibold text-slate-700">
+        <label v-for="item in checklistItems" :key="item.key" class="flex items-start gap-3 rounded-md border border-slate-200 p-3 text-sm font-semibold text-slate-700 transition duration-200 hover:border-emerald-200 hover:bg-emerald-50/60">
           <input v-model="form[item.key]" type="checkbox" class="mt-1" />
           <span>{{ item.label }}</span>
         </label>
@@ -149,8 +149,8 @@ onMounted(loadChecklist);
       <p v-if="feedback" class="mt-3 text-sm text-red-600">{{ feedback }}</p>
 
       <div class="mt-6 flex justify-end gap-3">
-        <button type="button" class="rounded-md border border-slate-200 px-4 py-2 text-sm font-semibold text-ink" @click="closeModal">Batal</button>
-        <button type="submit" class="rounded-md bg-success px-4 py-2 text-sm font-semibold text-white disabled:opacity-60" :disabled="saving">
+        <button type="button" class="action-secondary" @click="closeModal">Batal</button>
+        <button type="submit" class="action-success" :disabled="saving">
           {{ saving ? 'Menyimpan...' : 'Simpan Checklist' }}
         </button>
       </div>

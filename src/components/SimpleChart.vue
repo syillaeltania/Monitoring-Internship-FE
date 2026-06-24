@@ -6,6 +6,7 @@ import { CanvasRenderer } from 'echarts/renderers';
 import { BarChart, LineChart, PieChart } from 'echarts/charts';
 import { GridComponent, LegendComponent, TooltipComponent } from 'echarts/components';
 import { formatChartValue, formatCompactNumber, type ChartValueFormat } from '../utils/chartFormatting';
+import { chartPalette, toneAccentClass, toneWidgetClass, type ToneKey } from '../utils/designSystem';
 
 use([CanvasRenderer, BarChart, LineChart, PieChart, GridComponent, LegendComponent, TooltipComponent]);
 
@@ -14,6 +15,7 @@ const props = defineProps<{
   type: 'bar' | 'line' | 'pie';
   data: { name?: string; month?: string; value: number }[];
   valueFormat?: ChartValueFormat;
+  tone?: ToneKey;
 }>();
 
 const valueFormat = computed(() => props.valueFormat ?? 'currency');
@@ -37,15 +39,16 @@ const option = computed(() => {
       },
       series: [
         {
-          type: 'pie',
-          radius: ['42%', '68%'],
-          center: ['50%', '43%'],
-          avoidLabelOverlap: true,
-          label: { show: false },
-          labelLine: { show: false },
-          data: props.data,
-        },
-      ],
+              type: 'pie',
+              radius: ['42%', '68%'],
+              center: ['50%', '43%'],
+              avoidLabelOverlap: true,
+              label: { show: false },
+              labelLine: { show: false },
+              color: chartPalette,
+              data: props.data,
+            },
+          ],
     };
   }
   return {
@@ -74,14 +77,27 @@ const option = computed(() => {
       },
       splitLine: { lineStyle: { color: '#e2e8f0' } },
     },
-    series: [{ type: props.type, data: props.data.map((item) => item.value), color: '#1f9d6a' }],
+    series: [
+      {
+        type: props.type,
+        data: props.data.map((item) => item.value),
+        color: props.type === 'line' ? '#2563eb' : '#1f9d6a',
+        smooth: props.type === 'line',
+        symbolSize: props.type === 'line' ? 7 : undefined,
+        lineStyle: props.type === 'line' ? { width: 3 } : undefined,
+        itemStyle: props.type === 'bar' ? { borderRadius: [6, 6, 0, 0] } : undefined,
+      },
+    ],
   };
 });
 </script>
 
 <template>
-  <div class="panel p-5">
-    <h3 class="mb-4 text-sm font-semibold text-ink">{{ title }}</h3>
+  <div class="panel overflow-hidden bg-gradient-to-br p-5 ring-1 transition duration-300 hover:-translate-y-0.5 hover:shadow-xl" :class="toneWidgetClass(tone ?? 'green')">
+    <div class="mb-4 flex items-center gap-3">
+      <span class="h-8 w-1 rounded-full" :class="toneAccentClass(tone ?? 'green')"></span>
+      <h3 class="text-sm font-semibold text-ink">{{ title }}</h3>
+    </div>
     <VChart class="h-64 w-full sm:h-72" :option="option" autoresize />
   </div>
 </template>

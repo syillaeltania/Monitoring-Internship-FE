@@ -27,10 +27,10 @@ watch(pagination, (value) => {
 </script>
 
 <template>
-  <div class="panel overflow-hidden">
+  <div class="panel overflow-hidden ring-1 ring-blue-50">
     <div class="overflow-x-auto">
       <table class="min-w-full divide-y divide-slate-200 text-sm">
-        <thead class="bg-slate-50">
+        <thead class="bg-gradient-to-r from-blue-50 via-slate-50 to-emerald-50">
           <tr>
             <th v-for="column in columns" :key="column" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-600">
               {{ column }}
@@ -47,7 +47,7 @@ watch(pagination, (value) => {
             v-else
             v-for="(row, index) in pagination.rows"
             :key="String(row.id ?? index)"
-            class="hover:bg-slate-50"
+            class="transition duration-200 hover:bg-blue-50/50"
             :class="props.rowClass?.(row)"
           >
             <td
@@ -73,7 +73,7 @@ watch(pagination, (value) => {
         </tbody>
       </table>
     </div>
-    <div class="flex flex-col gap-3 border-t border-slate-100 bg-white px-4 py-3 text-sm text-slate-600 md:flex-row md:items-center md:justify-between">
+    <div class="flex flex-col gap-3 border-t border-slate-100 bg-gradient-to-r from-white to-slate-50 px-4 py-3 text-sm text-slate-600 md:flex-row md:items-center md:justify-between">
       <div class="flex items-center gap-2">
         <span>Tampilkan</span>
         <select v-model.number="pageSize" class="h-9 rounded-md border border-slate-200 bg-white px-2 text-sm text-ink">
@@ -85,7 +85,7 @@ watch(pagination, (value) => {
         <span>{{ props.loading ? 'Memuat data...' : `${pagination.startIndex}-${pagination.endIndex} dari ${pagination.totalRows}` }}</span>
         <div class="flex items-center gap-2">
           <button
-            class="rounded-md border border-slate-200 px-3 py-1.5 text-sm font-semibold text-ink disabled:cursor-not-allowed disabled:opacity-40"
+            class="action-secondary px-3 py-1.5"
             :disabled="pagination.currentPage <= 1"
             @click="currentPage -= 1"
           >
@@ -93,7 +93,7 @@ watch(pagination, (value) => {
           </button>
           <span class="min-w-20 text-center">Hal {{ pagination.currentPage }} / {{ pagination.totalPages }}</span>
           <button
-            class="rounded-md border border-slate-200 px-3 py-1.5 text-sm font-semibold text-ink disabled:cursor-not-allowed disabled:opacity-40"
+            class="action-secondary px-3 py-1.5"
             :disabled="pagination.currentPage >= pagination.totalPages"
             @click="currentPage += 1"
           >

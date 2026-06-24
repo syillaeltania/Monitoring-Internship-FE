@@ -151,13 +151,13 @@ watch(filters, async () => {
   </div>
   <div class="mb-6 grid gap-4 lg:grid-cols-3">
     <StatCard label="Total Cost Keseluruhan" :value="rupiah(data.total)" tone="green" />
-    <SimpleChart title="Cost per Divisi" type="bar" :data="data.byDivision" />
-    <SimpleChart title="Cost per Tipe" type="pie" :data="data.byType" />
+    <SimpleChart title="Cost per Divisi" type="bar" :data="data.byDivision" tone="green" />
+    <SimpleChart title="Cost per Tipe" type="pie" :data="data.byType" tone="indigo" />
   </div>
 
   <section class="mb-6 grid gap-4 xl:grid-cols-4">
-    <article class="panel p-5">
-      <p class="text-xs font-semibold uppercase text-success">Data</p>
+    <article class="panel bg-gradient-to-br from-cyan-50 via-white to-white p-5 ring-1 ring-cyan-100">
+      <p class="text-xs font-semibold uppercase text-cyan-700">Data</p>
       <h2 class="mt-2 text-lg font-semibold text-ink">{{ selectedMonthLabel }} {{ filters.year }}</h2>
       <div class="mt-4 space-y-3 text-sm text-slate-600">
         <div class="flex justify-between gap-3"><span>Peserta terhitung</span><strong class="text-ink">{{ participantCount }}</strong></div>
@@ -166,7 +166,7 @@ watch(filters, async () => {
       </div>
     </article>
 
-    <article class="panel p-5">
+    <article class="panel bg-gradient-to-br from-emerald-50 via-white to-white p-5 ring-1 ring-emerald-100">
       <p class="text-xs font-semibold uppercase text-success">Information</p>
       <h2 class="mt-2 text-lg font-semibold text-ink">{{ rupiah(data.total) }}</h2>
       <div class="mt-4 space-y-3 text-sm text-slate-600">
@@ -178,8 +178,8 @@ watch(filters, async () => {
       </div>
     </article>
 
-    <article class="panel p-5">
-      <p class="text-xs font-semibold uppercase text-success">Knowledge</p>
+    <article class="panel bg-gradient-to-br from-indigo-50 via-white to-white p-5 ring-1 ring-indigo-100">
+      <p class="text-xs font-semibold uppercase text-indigo-700">Knowledge</p>
       <h2 class="mt-2 text-lg font-semibold text-ink">{{ topDivision?.name ?? '-' }}</h2>
       <p class="mt-1 text-sm text-slate-500">Divisi dengan cost terbesar: {{ rupiah(topDivision?.value ?? 0) }}</p>
       <div class="mt-4 space-y-2 text-sm text-slate-600">
@@ -190,8 +190,8 @@ watch(filters, async () => {
       </div>
     </article>
 
-    <article class="panel p-5">
-      <p class="text-xs font-semibold uppercase text-success">Wisdom</p>
+    <article class="panel bg-gradient-to-br from-amber-50 via-white to-white p-5 ring-1 ring-amber-100">
+      <p class="text-xs font-semibold uppercase text-amber-700">Wisdom</p>
       <h2 class="mt-2 text-lg font-semibold text-ink">Rekomendasi HCM</h2>
       <ul class="mt-4 space-y-3 text-sm text-slate-600">
         <li v-for="item in wisdomItems" :key="item" class="border-l-2 border-success pl-3">{{ item }}</li>
@@ -205,7 +205,7 @@ watch(filters, async () => {
         <h2 class="text-sm font-semibold text-ink">Edit Cost</h2>
         <p class="mt-1 text-sm text-slate-500">{{ editingCost.Peserta }} - {{ editingCost.Divisi }} - {{ editingCost.month }}/{{ editingCost.year }}</p>
       </div>
-      <button class="rounded-md border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600" @click="editingCost = null">Tutup</button>
+      <button class="action-secondary px-3 py-2" @click="editingCost = null">Tutup</button>
     </div>
     <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       <input v-model.number="costForm.baseSalary" class="control" type="number" min="0" placeholder="Gaji Pokok" />
@@ -215,7 +215,7 @@ watch(filters, async () => {
       </div>
     </div>
     <div class="mt-4 flex flex-wrap items-center gap-3">
-      <button class="rounded-md bg-success px-4 py-2 text-sm font-semibold text-white disabled:opacity-60" :disabled="saving" @click="saveCost">
+      <button class="action-success" :disabled="saving" @click="saveCost">
         {{ saving ? 'Menyimpan...' : 'Simpan Cost' }}
       </button>
       <p v-if="feedback" class="text-sm text-slate-600">{{ feedback }}</p>
@@ -230,7 +230,7 @@ watch(filters, async () => {
     empty-message="Tidak ada cost pada periode atau filter ini."
   >
     <template #Aksi="{ row }">
-      <button class="rounded-md border border-slate-200 px-3 py-1.5 text-xs font-semibold text-navy" @click="openEditCost(row)">Edit</button>
+      <button class="action-secondary px-3 py-1.5 text-xs text-navy" @click="openEditCost(row)">Edit</button>
     </template>
   </DataTable>
 </template>

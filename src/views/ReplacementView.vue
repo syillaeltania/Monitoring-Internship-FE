@@ -2,6 +2,7 @@
 import { computed, onMounted, ref } from 'vue';
 import DataTable from '../components/DataTable.vue';
 import PageHeader from '../components/PageHeader.vue';
+import StatCard from '../components/StatCard.vue';
 import StatusBadge from '../components/StatusBadge.vue';
 import { api, type Intern } from '../services/api';
 import { buildReplacementBoard, buildSchedulerRows, getMonthInterns, getReplacementCellTone, type ReplacementBoardColumn, type ReplacementBoardItem } from '../utils/replacementScheduler';
@@ -103,26 +104,11 @@ onMounted(async () => {
   <PageHeader title="Monitoring Pergantian Magang" subtitle="Memantau minimal kebutuhan magang instansi per tim dan risiko replacement." />
 
   <section class="mb-5 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
-    <div class="panel p-5">
-      <p class="text-sm font-medium text-slate-500">Urgent / Kosong</p>
-      <p class="mt-3 text-3xl font-semibold text-danger">{{ summary.urgent }}</p>
-    </div>
-    <div class="panel p-5">
-      <p class="text-sm font-medium text-slate-500">Habis <= 30 Hari</p>
-      <p class="mt-3 text-3xl font-semibold text-warning">{{ summary.h30 }}</p>
-    </div>
-    <div class="panel p-5">
-      <p class="text-sm font-medium text-slate-500">Habis <= 90 Hari</p>
-      <p class="mt-3 text-3xl font-semibold text-warning">{{ summary.h90 }}</p>
-    </div>
-    <div class="panel p-5">
-      <p class="text-sm font-medium text-slate-500">Total Butuh Follow Up</p>
-      <p class="mt-3 text-3xl font-semibold text-navy">{{ summary.needs }}</p>
-    </div>
-    <div class="panel p-5">
-      <p class="text-sm font-medium text-slate-500">Tim Terpantau</p>
-      <p class="mt-3 text-3xl font-semibold text-success">{{ summary.monitored }}</p>
-    </div>
+    <StatCard label="Urgent / Kosong" :value="summary.urgent" tone="red" />
+    <StatCard label="Habis <= 30 Hari" :value="summary.h30" tone="orange" />
+    <StatCard label="Habis <= 90 Hari" :value="summary.h90" tone="cyan" />
+    <StatCard label="Total Butuh Follow Up" :value="summary.needs" tone="indigo" />
+    <StatCard label="Tim Terpantau" :value="summary.monitored" tone="green" />
   </section>
 
   <section class="panel mb-5 p-2">
@@ -130,8 +116,8 @@ onMounted(async () => {
       <button
         v-for="tab in replacementTabs"
         :key="tab.key"
-        class="min-w-fit rounded-md px-4 py-3 text-left text-sm font-semibold transition"
-        :class="activeTab === tab.key ? 'bg-navy text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100 hover:text-navy'"
+        class="min-w-fit rounded-md px-4 py-3 text-left text-sm font-semibold transition duration-200"
+        :class="activeTab === tab.key ? 'bg-navy text-white shadow-md' : 'text-slate-600 hover:-translate-y-0.5 hover:bg-blue-50 hover:text-navy'"
         @click="activeTab = tab.key"
       >
         <span class="block">{{ tab.label }}</span>

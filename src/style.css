@@ -3,7 +3,10 @@
 @tailwind utilities;
 
 html {
-  background: #f4f7fb;
+  background:
+    radial-gradient(circle at top left, rgba(31, 157, 106, 0.12), transparent 28rem),
+    radial-gradient(circle at top right, rgba(37, 99, 235, 0.12), transparent 26rem),
+    #f4f7fb;
   color: #172033;
   font-family:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -20,10 +23,45 @@ textarea {
   font: inherit;
 }
 
+button,
+a,
+select,
+input,
+textarea {
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease,
+    opacity 180ms ease;
+}
+
+button:not(:disabled):active {
+  transform: translateY(1px) scale(0.99);
+}
+
 .panel {
-  @apply rounded-lg border border-slate-200 bg-white shadow-panel;
+  @apply rounded-lg border border-white/70 bg-white/90 shadow-panel backdrop-blur;
+  transition:
+    box-shadow 220ms ease,
+    transform 220ms ease,
+    border-color 220ms ease,
+    background-color 220ms ease;
 }
 
 .control {
-  @apply h-10 w-full max-w-full rounded-md border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-navy focus:ring-2 focus:ring-navy/10;
+  @apply h-10 w-full max-w-full rounded-md border border-slate-200 bg-white/95 px-3 text-sm outline-none transition focus:border-navy focus:ring-2 focus:ring-navy/10;
+}
+
+.action-primary {
+  @apply rounded-md bg-navy px-4 py-2 text-sm font-semibold text-white shadow-sm hover:-translate-y-0.5 hover:bg-[#173d78] hover:shadow-md disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60;
+}
+
+.action-success {
+  @apply rounded-md bg-success px-4 py-2 text-sm font-semibold text-white shadow-sm hover:-translate-y-0.5 hover:bg-emerald-700 hover:shadow-md disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60;
+}
+
+.action-secondary {
+  @apply rounded-md border border-slate-200 bg-white/90 px-4 py-2 text-sm font-semibold text-ink shadow-sm hover:-translate-y-0.5 hover:border-navy/20 hover:bg-slate-50 hover:shadow-md disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50;
 }
