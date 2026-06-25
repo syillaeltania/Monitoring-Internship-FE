@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { api } from '../services/api';
+import { useAuthStore } from '../stores/auth';
 import {
   countNotifications,
   notificationSeverityClass,
@@ -44,6 +46,8 @@ const navIconPath: Record<string, string> = {
 
 const notifications = ref<AppNotification[]>([]);
 const notificationDrawerOpen = ref(false);
+const auth = useAuthStore();
+const router = useRouter();
 
 const notificationCount = computed(() =>
   countNotifications(notifications.value),
@@ -52,6 +56,11 @@ const notificationCount = computed(() =>
 onMounted(async () => {
   notifications.value = await api.notifications();
 });
+
+async function signOut() {
+  await auth.signOut();
+  router.replace('/sign-in');
+}
 </script>
 
 <template>
@@ -157,15 +166,18 @@ onMounted(async () => {
             </button>
 
             <select class="control hidden w-36 sm:block">
-              <option>HCM Staff</option>
-              <option>HCM Leader</option>
+              <option>{{ auth.displayRole }}</option>
             </select>
 
             <div
               class="h-10 w-10 shrink-0 rounded-full bg-[#8CE0AE] text-center text-sm font-bold leading-10 text-[#10162A]"
+              :title="auth.displayName"
             >
               HC
             </div>
+            <button class="action-secondary hidden px-3 py-2 text-xs sm:inline-flex" type="button" @click="signOut">
+              Sign Out
+            </button>
           </div>
         </header>
 
