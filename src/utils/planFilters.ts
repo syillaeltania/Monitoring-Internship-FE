@@ -22,15 +22,16 @@ const dateOnly = (value: Date | string) => {
 };
 
 export const getPlanDisplayStatus = (plan: SortablePlan, today = new Date()) => {
-  if (isCompletedPlan(plan)) return plan.processStatus || 'COMPLETED';
-  if (!plan.plannedEndDate) return plan.processStatus || '-';
+  if (isCompletedPlan(plan)) return 'COMPLETED';
+  if (plan.processStatus === 'ACTIVE') return 'ON_GOING';
+  if (!plan.plannedEndDate) return 'WAITING_JOIN';
 
   const current = dateOnly(today);
   const start = dateOnly(plan.plannedStartDate);
   const end = dateOnly(plan.plannedEndDate);
 
   if (current >= start && current <= end) return 'ON_GOING';
-  return plan.processStatus || '-';
+  return 'WAITING_JOIN';
 };
 
 export const filterPlansByStatus = <T extends SortablePlan>(plans: T[], status: string, today = new Date()) => {

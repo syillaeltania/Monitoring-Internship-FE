@@ -5,6 +5,7 @@ import PageHeader from '../components/PageHeader.vue';
 import StatusBadge from '../components/StatusBadge.vue';
 import { api, type Intern, type InternshipType, type Status } from '../services/api';
 import { dateShort } from '../utils/format';
+import { canDeleteFromInternForm } from '../utils/internActions';
 import { filterInterns, type InternFilters, type InternSortOption, normalizeDivision, sortInterns, uniqueDivisions, uniqueTeams } from '../utils/internFilters';
 
 const interns = ref<Intern[]>([]);
@@ -173,8 +174,8 @@ async function submitForm() {
   }
 }
 
-async function deleteIntern(row: Record<string, unknown>) {
-  const intern = interns.value.find((item) => item.id === row.id);
+async function deleteEditingIntern() {
+  const intern = interns.value.find((item) => item.id === editingId.value);
   if (!intern) return;
   if (!window.confirm(`Hapus data ${intern.name}?`)) return;
 
@@ -182,10 +183,8 @@ async function deleteIntern(row: Record<string, unknown>) {
     await api.deleteIntern(intern.id);
     await loadInterns();
     feedback.value = 'Data peserta berhasil dihapus.';
-    if (editingId.value === intern.id) {
-      isFormOpen.value = false;
-      resetForm();
-    }
+    isFormOpen.value = false;
+    resetForm();
   } catch {
     feedback.value = 'Data belum bisa dihapus. Periksa koneksi backend.';
   }
@@ -238,6 +237,13 @@ watch(division, () => {
         {{ saving ? 'Menyimpan...' : editingId ? 'Simpan Perubahan' : 'Simpan Peserta' }}
       </button>
       <button v-if="editingId" class="action-secondary" @click="openCreate">Buat Baru</button>
+      <button
+        v-if="canDeleteFromInternForm(editingId)"
+        class="rounded-xl border border-red-100 bg-red-50 px-4 py-2 text-sm font-semibold text-red-700 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-red-100 hover:shadow-md"
+        @click="deleteEditingIntern"
+      >
+        Hapus Peserta
+      </button>
       <p v-if="feedback" class="text-sm text-slate-600">{{ feedback }}</p>
     </div>
   </section>
@@ -282,10 +288,7 @@ watch(division, () => {
   >
     <template #Status="{ row }"><StatusBadge :value="String(row.Status)" /></template>
     <template #Aksi="{ row }">
-      <div class="flex gap-2">
-        <button class="action-secondary px-3 py-1.5 text-xs text-navy" @click="openEdit(row)">Edit</button>
-        <button class="rounded-md border border-red-100 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 shadow-sm hover:-translate-y-0.5 hover:bg-red-100 hover:shadow-md" @click="deleteIntern(row)">Hapus</button>
-      </div>
+      <button class="action-secondary px-3 py-1.5 text-xs text-navy" @click="openEdit(row)">Edit</button>
     </template>
   </DataTable>
 </template>

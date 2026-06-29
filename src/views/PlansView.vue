@@ -5,6 +5,7 @@ import PageHeader from '../components/PageHeader.vue';
 import StatusBadge from '../components/StatusBadge.vue';
 import { api } from '../services/api';
 import { dateShort } from '../utils/format';
+import { buildPlanFormFromPlan, emptyPlanForm } from '../utils/planForm';
 import { filterPlansByStatus, getPlanDisplayStatus, isCompletedPlan, sortPlans, type PlanSortMode } from '../utils/planFilters';
 
 const plans = ref<any[]>([]);
@@ -12,38 +13,18 @@ const sortMode = ref<PlanSortMode>('joinDateAsc');
 const statusFilter = ref('');
 const editingPlan = ref<any | null>(null);
 const showCreateForm = ref(false);
-const statusDraft = ref('');
 const isSaving = ref(false);
+const isDeleting = ref(false);
 const isCreating = ref(false);
 const loading = ref(false);
-const emptyPlanForm = () => ({
-  name: '',
-  type: 'INSTITUTION',
-  institution: '',
-  major: '',
-  targetDivision: '',
-  targetTeam: '',
-  leader: '',
-  acceptanceLetterDate: '',
-  plannedStartDate: '',
-  plannedEndDate: '',
-  documentStatus: '',
-  onboardingStatus: '',
-  phone: '',
-  notes: '',
-});
 const planForm = ref(emptyPlanForm());
+const editPlanForm = ref(emptyPlanForm());
 const processStatusOptions = [
-  'REQUEST_RECEIVED',
-  'SCREENING',
-  'ACCEPTED',
-  'ACCEPTANCE_LETTER_SENT',
   'WAITING_JOIN',
   'ACTIVE',
   'COMPLETED',
-  'COMPLETION_CHECKLIST_DONE',
 ];
-const statusFilterOptions = ['', 'REQUEST_RECEIVED', 'SCREENING', 'ACCEPTED', 'ACCEPTANCE_LETTER_SENT', 'WAITING_JOIN', 'ON_GOING', 'ACTIVE', 'COMPLETED', 'COMPLETION_CHECKLIST_DONE'];
+const statusFilterOptions = ['', 'WAITING_JOIN', 'ON_GOING', 'COMPLETED'];
 const sortedPlans = computed(() => sortPlans(filterPlansByStatus(plans.value, statusFilter.value), sortMode.value));
 const rows = computed(() =>
   sortedPlans.value.map((item) => ({
@@ -67,11 +48,24 @@ const planRowClass = (row: Record<string, unknown>) =>
 const planCellClass = (row: Record<string, unknown>) => (row._isCompleted ? '!text-white' : '');
 const openEdit = (row: Record<string, unknown>) => {
   editingPlan.value = plans.value.find((plan) => plan.id === row.id) ?? null;
-  statusDraft.value = String(row._rawProcessStatus || row.Proses || 'WAITING_JOIN');
+  if (editingPlan.value) {
+    let status = editingPlan.value.processStatus;
+    if (status === 'COMPLETION_CHECKLIST_DONE') {
+      status = 'COMPLETED';
+    } else if (status !== 'COMPLETED' && status !== 'ACTIVE' && status !== 'WAITING_JOIN') {
+      status = 'WAITING_JOIN';
+    }
+    editPlanForm.value = buildPlanFormFromPlan({
+      ...editingPlan.value,
+      processStatus: status,
+    });
+  } else {
+    editPlanForm.value = emptyPlanForm();
+  }
 };
 const closeEdit = () => {
   editingPlan.value = null;
-  statusDraft.value = '';
+  editPlanForm.value = emptyPlanForm();
 };
 const openCreate = () => {
   planForm.value = emptyPlanForm();
@@ -81,15 +75,29 @@ const closeCreate = () => {
   showCreateForm.value = false;
   planForm.value = emptyPlanForm();
 };
-const savePlanStatus = async () => {
+const savePlan = async () => {
   if (!editingPlan.value) return;
   isSaving.value = true;
   try {
-    const { data } = await api.updatePlanStatus(editingPlan.value.id, { processStatus: statusDraft.value });
+    const { data } = await api.updatePlan(editingPlan.value.id, editPlanForm.value);
     plans.value = plans.value.map((plan) => (plan.id === data.id ? data : plan));
     closeEdit();
   } finally {
     isSaving.value = false;
+  }
+};
+const deletePlan = async () => {
+  if (!editingPlan.value) return;
+  if (!window.confirm(`Hapus rencana magang untuk ${editingPlan.value.name}?`)) return;
+  isDeleting.value = true;
+  try {
+    await api.deletePlan(editingPlan.value.id);
+    plans.value = plans.value.filter((plan) => plan.id !== editingPlan.value.id);
+    closeEdit();
+  } catch (error) {
+    alert('Gagal menghapus rencana magang.');
+  } finally {
+    isDeleting.value = false;
   }
 };
 const createPlan = async () => {
@@ -163,23 +171,101 @@ onMounted(loadPlans);
   </DataTable>
 
   <div v-if="editingPlan" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 p-4">
-    <form class="w-full max-w-md rounded-2xl border border-[#E5EAF0] bg-white p-5 shadow-panel transition duration-200" @submit.prevent="savePlanStatus">
+    <form class="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-2xl border border-[#E5EAF0] bg-white p-5 shadow-panel transition duration-200" @submit.prevent="savePlan">
       <div class="mb-5">
-        <h2 class="text-lg font-semibold text-ink">Edit Status Rencana</h2>
-        <p class="mt-1 text-sm text-slate-500">{{ editingPlan.name }} · {{ editingPlan.targetDivision || 'Belum mapping divisi' }} / {{ editingPlan.targetTeam || 'Belum mapping tim' }}</p>
+        <h2 class="text-lg font-semibold text-ink">Edit Rencana Magang</h2>
+        <p class="mt-1 text-sm text-slate-500">Ubah data rencana, mapping, tanggal, dokumen, onboarding, dan status proses.</p>
       </div>
-      <label class="block text-sm font-semibold text-slate-600" for="plan-status">Status proses</label>
-      <select id="plan-status" v-model="statusDraft" class="control mt-2 w-full">
-        <option v-for="status in processStatusOptions" :key="status" :value="status">{{ status.replaceAll('_', ' ') }}</option>
-      </select>
+
+      <div class="grid gap-4 sm:grid-cols-2">
+        <label class="block text-sm font-semibold text-slate-600">
+          Nama
+          <input v-model="editPlanForm.name" required class="control mt-2 w-full" />
+        </label>
+        <label class="block text-sm font-semibold text-slate-600">
+          Tipe magang
+          <select v-model="editPlanForm.type" class="control mt-2 w-full">
+            <option value="INSTITUTION">Instansi</option>
+            <option value="PROFESSIONAL">Profesional</option>
+          </select>
+        </label>
+        <label class="block text-sm font-semibold text-slate-600">
+          Asal instansi
+          <input v-model="editPlanForm.institution" class="control mt-2 w-full" />
+        </label>
+        <label class="block text-sm font-semibold text-slate-600">
+          Jurusan
+          <input v-model="editPlanForm.major" class="control mt-2 w-full" />
+        </label>
+        <label class="block text-sm font-semibold text-slate-600">
+          Divisi tujuan
+          <span class="ml-1 text-xs font-medium text-slate-400">(opsional)</span>
+          <input v-model="editPlanForm.targetDivision" class="control mt-2 w-full" placeholder="Diisi setelah mapping peserta" />
+        </label>
+        <label class="block text-sm font-semibold text-slate-600">
+          Tim tujuan
+          <span class="ml-1 text-xs font-medium text-slate-400">(opsional)</span>
+          <input v-model="editPlanForm.targetTeam" class="control mt-2 w-full" placeholder="Diisi setelah mapping peserta" />
+        </label>
+        <label class="block text-sm font-semibold text-slate-600">
+          Leader
+          <span class="ml-1 text-xs font-medium text-slate-400">(opsional)</span>
+          <input v-model="editPlanForm.leader" class="control mt-2 w-full" placeholder="Diisi setelah mapping peserta" />
+        </label>
+        <label class="block text-sm font-semibold text-slate-600">
+          Nomor HP
+          <input v-model="editPlanForm.phone" class="control mt-2 w-full" />
+        </label>
+        <label class="block text-sm font-semibold text-slate-600">
+          Tanggal surat penerimaan
+          <input v-model="editPlanForm.acceptanceLetterDate" type="date" class="control mt-2 w-full" />
+        </label>
+        <label class="block text-sm font-semibold text-slate-600">
+          Tanggal rencana masuk
+          <input v-model="editPlanForm.plannedStartDate" required type="date" class="control mt-2 w-full" />
+        </label>
+        <label class="block text-sm font-semibold text-slate-600">
+          Tanggal rencana selesai
+          <input v-model="editPlanForm.plannedEndDate" required type="date" class="control mt-2 w-full" />
+        </label>
+        <label class="block text-sm font-semibold text-slate-600">
+          Status dokumen
+          <input v-model="editPlanForm.documentStatus" class="control mt-2 w-full" />
+        </label>
+        <label class="block text-sm font-semibold text-slate-600">
+          Status onboarding
+          <input v-model="editPlanForm.onboardingStatus" class="control mt-2 w-full" />
+        </label>
+        <label class="block text-sm font-semibold text-slate-600">
+          Status proses
+          <select v-model="editPlanForm.processStatus" class="control mt-2 w-full">
+            <option v-for="status in processStatusOptions" :key="status" :value="status">{{ status === 'ACTIVE' ? 'ON GOING' : status.replaceAll('_', ' ') }}</option>
+          </select>
+        </label>
+        <label class="block text-sm font-semibold text-slate-600 sm:col-span-2">
+          Notes
+          <textarea v-model="editPlanForm.notes" class="control mt-2 min-h-24 w-full"></textarea>
+        </label>
+      </div>
+
       <p class="mt-3 text-xs text-slate-500">
         ON GOING tampil otomatis jika tanggal berjalan sudah berada di periode masuk sampai selesai.
       </p>
-      <div class="mt-6 flex justify-end gap-3">
-        <button type="button" class="action-secondary" @click="closeEdit">Batal</button>
-        <button type="submit" class="action-primary" :disabled="isSaving">
-          {{ isSaving ? 'Menyimpan...' : 'Simpan' }}
+      <div class="mt-6 flex justify-between items-center">
+        <button
+          type="button"
+          class="rounded-xl border border-red-100 bg-red-50 px-4 py-2 text-sm font-semibold text-red-700 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-red-100 hover:shadow-md disabled:opacity-50"
+          :disabled="isDeleting"
+          @click="deletePlan"
+        >
+          {{ isDeleting ? 'Menghapus...' : 'Hapus Rencana' }}
         </button>
+        <div class="flex gap-3">
+          <button type="button" class="action-secondary" @click="closeEdit">Batal</button>
+          <button type="submit" class="action-primary" :disabled="isSaving">
+            {{ isSaving ? 'Menyimpan...' : 'Simpan' }}
+          </button>
+        </div>
       </div>
     </form>
   </div>
