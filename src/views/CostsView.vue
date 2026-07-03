@@ -162,7 +162,7 @@ watch(filters, async () => {
     <SimpleChart title="Cost per Tipe" type="pie" :data="data.byType" tone="indigo" />
   </div>
   <div class="mb-6 grid gap-4 md:grid-cols-2">
-    <SimpleChart title="Tren Jumlah Peserta" type="line" :data="data.trend || []" tone="cyan" valueFormat="number" />
+    <SimpleChart title="Tren Jumlah Peserta" type="line" :data="data.trend || []" tone="cyan" valueFormat="count" />
     <SimpleChart title="Tren Cost Bulanan" type="line" :data="data.costTrend || []" tone="orange" valueFormat="currency" />
   </div>
 
