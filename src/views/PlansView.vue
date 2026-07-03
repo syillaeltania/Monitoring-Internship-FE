@@ -9,7 +9,7 @@ import { buildPlanFormFromPlan, emptyPlanForm } from '../utils/planForm';
 import { filterPlansByStatus, getPlanDisplayStatus, isCompletedPlan, sortPlans, type PlanSortMode } from '../utils/planFilters';
 
 const plans = ref<any[]>([]);
-const sortMode = ref<PlanSortMode>('joinDateAsc');
+const sortMode = ref<PlanSortMode>('statusPriority');
 const statusFilter = ref('');
 const editingPlan = ref<any | null>(null);
 const showCreateForm = ref(false);
@@ -44,8 +44,8 @@ const rows = computed(() =>
   })),
 );
 const planRowClass = (row: Record<string, unknown>) =>
-  row._isCompleted ? '!bg-[#17315f] text-white' : '';
-const planCellClass = (row: Record<string, unknown>) => (row._isCompleted ? '!text-white' : '');
+  row._isCompleted ? 'bg-transparent hover:bg-slate-50/50' : '';
+const planCellClass = (row: Record<string, unknown>) => (row._isCompleted ? '!text-[#77736F] opacity-70' : '');
 const openEdit = (row: Record<string, unknown>) => {
   editingPlan.value = plans.value.find((plan) => plan.id === row.id) ?? null;
   if (editingPlan.value) {
@@ -139,6 +139,7 @@ onMounted(loadPlans);
         </option>
       </select>
       <select v-model="sortMode" class="control">
+        <option value="statusPriority">Status Aktif Terlebih Dahulu</option>
         <option value="joinDateAsc">Terdekat akan join</option>
         <option value="joinDateDesc">Terlama akan join</option>
       </select>
@@ -154,10 +155,7 @@ onMounted(loadPlans);
     :cell-class="planCellClass"
   >
     <template #Proses="{ row }">
-      <span v-if="row._isCompleted" class="inline-flex rounded-full border border-white/40 px-2.5 py-1 text-xs font-semibold text-white">
-        {{ String(row.Proses).replaceAll('_', ' ') }}
-      </span>
-      <StatusBadge v-else :value="String(row.Proses)" />
+      <StatusBadge :value="String(row.Proses)" />
     </template>
     <template #Aksi="{ row }">
       <button

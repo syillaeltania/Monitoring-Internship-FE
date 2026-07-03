@@ -75,6 +75,10 @@ const option = computed(() => {
       data: xAxisLabels.value,
       axisLabel: {
         color: '#77736F',
+        interval: props.type === 'bar' ? 0 : 'auto',
+        width: props.type === 'bar' ? 70 : undefined,
+        overflow: props.type === 'bar' ? 'break' : undefined,
+        lineHeight: 14,
       },
     },
     yAxis: {
