@@ -76,8 +76,20 @@ export const normalizePlacementTeam = (team?: string, position?: string) => {
   if (upperTeam === 'LOGISTIK' || upperTeam === 'LOG') return 'LOGISTIC';
   if (upperTeam === 'SMART' && upperPosition.includes('PR')) return 'SMART (PR)';
   if (upperTeam === 'SMART' && upperPosition.includes('ADMIN')) return 'SMART (Admin)';
+  if (upperTeam === 'SMART' && upperPosition.includes('WEBDEV')) return 'SMART (Webdev)';
+  if (upperTeam === 'AM' && upperPosition.includes('QA')) return 'AM (QA)';
+  if (upperTeam === 'AM' && upperPosition.includes('TW')) return 'AM (TW)';
   if (upperTeam === 'NB-3 (PGN BILIING)' || upperTeam === 'NB-3 (PGN BILLING)') return 'NB-3 (PGN Billing)';
   if (upperTeam === 'NB-4 (PEGADAIAN)' || upperTeam === 'NB-4 (PEGADAIAN)') return 'NB-4 (Pegadaian)';
+
+  // MSOS & SQ mappings
+  if (upperTeam === 'MSOS-1' || upperTeam === 'MSOS 1') return 'MSO 1';
+  if (upperTeam === 'MSOS-2' || upperTeam === 'MSOS 2') return 'MSO 2';
+  if (upperTeam === 'MSOS-3' || upperTeam === 'MSOS 3') return 'MSO 3';
+  if (upperTeam === 'MSOS-4' || upperTeam === 'MSOS 4') return 'MSO 4';
+  if (upperTeam === 'MSOS-5' || upperTeam === 'MSOS 5') return 'MSO 5';
+  if (upperTeam === 'SQ') return 'Software Quality';
+
   return rawTeam;
 };
 export const getPlacementKey = (division?: string, team?: string, position?: string) => `${normalizedDivision(division)}||${normalizePlacementTeam(team, position)}`;
@@ -88,35 +100,6 @@ const statusPriority: Record<ReplacementStatus, number> = {
   COVERED: 2,
 };
 
-export const officialReplacementTeams = [
-  { division: 'BUSDEV', team: 'SMART (PR)' },
-  { division: 'BUSDEV', team: 'SMART (Admin)' },
-  { division: 'BUSDEV', team: 'AI Dev' },
-  { division: 'BUSDEV', team: 'AM' },
-  { division: 'BUSDEV', team: 'DOOR' },
-  { division: 'CORE', team: 'CLC' },
-  { division: 'CORE', team: 'FINANCE' },
-  { division: 'CORE', team: 'HCM' },
-  { division: 'CORE', team: 'LOGISTIC' },
-  { division: 'MSOS', team: 'DEVOPS' },
-  { division: 'MSOS', team: 'MSO 1' },
-  { division: 'MSOS', team: 'MSO 2' },
-  { division: 'MSOS', team: 'MSO 3' },
-  { division: 'MSOS', team: 'MSO 4' },
-  { division: 'MSOS', team: 'MSO 5' },
-  { division: 'MSOS', team: 'Software Quality' },
-  { division: 'MSOS', team: 'MSOS' },
-  { division: 'NEW BUSINESS', team: 'NB-1 (TSEL)' },
-  { division: 'NEW BUSINESS', team: 'NB-2 (TSEL)' },
-  { division: 'NEW BUSINESS', team: 'NB-2 (PGN)' },
-  { division: 'NEW BUSINESS', team: 'NB-3 (PGN Billing)' },
-  { division: 'NEW BUSINESS', team: 'NB-4 (Pegadaian)' },
-  { division: 'NEW BUSINESS', team: 'NB-5 (ERP)' },
-  { division: 'TELCO', team: 'TELCO-1' },
-  { division: 'TELCO', team: 'TELCO-2' },
-  { division: 'TELCO', team: 'TELCO-3' },
-] as const;
-
 const monthStart = (year: number, monthIndex: number) => new Date(year, monthIndex, 1);
 const monthEnd = (year: number, monthIndex: number) => new Date(year, monthIndex + 1, 0);
 const dateOnly = (value: Date | string) => {
@@ -125,8 +108,8 @@ const dateOnly = (value: Date | string) => {
 };
 const daysBetween = (start: Date, end: Date) => Math.ceil((dateOnly(end).getTime() - dateOnly(start).getTime()) / 86400000);
 
-export const isSamePlacement = (intern: Intern, row: Pick<SchedulerRow, 'division' | 'team'>) =>
-  getPlacementKey(intern.division, intern.team, intern.position) === getPlacementKey(row.division, row.team);
+export const isSamePlacement = (intern: Intern, row: Pick<SchedulerRow, 'division' | 'team' | 'notes'>) =>
+  getPlacementKey(intern.division, intern.team, intern.position) === getPlacementKey(row.division, row.team, row.notes);
 
 export const isActiveInMonth = (intern: Intern, year: number, monthIndex: number) =>
   new Date(intern.startDate) <= monthEnd(year, monthIndex) && new Date(intern.endDate) >= monthStart(year, monthIndex);
@@ -136,7 +119,7 @@ export const endsInMonth = (intern: Intern, year: number, monthIndex: number) =>
   return endDate.getFullYear() === year && endDate.getMonth() === monthIndex;
 };
 
-export const getMonthInterns = (row: Pick<SchedulerRow, 'division' | 'team'>, interns: Intern[], year: number, monthIndex: number) =>
+export const getMonthInterns = (row: Pick<SchedulerRow, 'division' | 'team' | 'notes'>, interns: Intern[], year: number, monthIndex: number) =>
   interns
     .filter((intern) => intern.type === 'INSTITUTION')
     .filter((intern) => isSamePlacement(intern, row))
@@ -144,7 +127,7 @@ export const getMonthInterns = (row: Pick<SchedulerRow, 'division' | 'team'>, in
     .sort((a, b) => a.name.localeCompare(b.name));
 
 export const getReplacementCellTone = (
-  row: Pick<SchedulerRow, 'division' | 'team'>,
+  row: Pick<SchedulerRow, 'division' | 'team' | 'notes'>,
   interns: Intern[],
   year: number,
   monthIndex: number,
@@ -182,7 +165,7 @@ export const buildEndingSoonReminders = (interns: Intern[], today = new Date(), 
       };
     });
 
-const findPlacementInstitutionInterns = (row: Pick<SchedulerRow, 'division' | 'team'>, interns: Intern[], today: Date) =>
+const findPlacementInstitutionInterns = (row: Pick<SchedulerRow, 'division' | 'team' | 'notes'>, interns: Intern[], today: Date) =>
   interns
     .filter((intern) => intern.type === 'INSTITUTION')
     .filter((intern) => intern.status === 'ACTIVE')
@@ -253,30 +236,75 @@ export const buildReplacementBoard = (rows: SchedulerRow[], interns: Intern[], t
 export const buildSchedulerRows = (replacementRows: ReplacementSourceRow[], interns: Intern[]): SchedulerRow[] => {
   const rows = new Map<string, SchedulerRow>();
 
-  officialReplacementTeams.forEach((placement, index) => {
-    const matchingRow = replacementRows.find((row) => getPlacementKey(row.division, row.team) === getPlacementKey(placement.division, placement.team));
-    const matchingInterns = interns.filter((intern) => intern.type === 'INSTITUTION' && isSamePlacement(intern, placement));
-    const soonestIntern = [...matchingInterns].sort((a, b) => new Date(a.endDate).getTime() - new Date(b.endDate).getTime())[0];
-    const activeInstitutionCount = matchingRow?.activeInstitutionCount ?? matchingInterns.filter((intern) => intern.status === 'ACTIVE').length;
-    const replacementStatus = matchingRow?.replacementStatus ?? (activeInstitutionCount === 0 ? 'URGENT_EMPTY' : 'COVERED');
-    const key = getPlacementKey(placement.division, placement.team);
-
-    rows.set(key, {
-      id: matchingRow?.id ?? `official-${index + 1}`,
-      division: placement.division,
-      team: placement.team,
-      leader: matchingRow?.leader || soonestIntern?.leader || '-',
-      notes: matchingRow?.notes || soonestIntern?.position || '',
-      activeInstitutionCount,
-      activeProfessionalCount: matchingRow?.activeProfessionalCount ?? 0,
-      minimumInstitutionNeed: matchingRow?.minimumInstitutionNeed ?? 1,
-      endingInternName: matchingRow?.endingInternName ?? soonestIntern?.name,
-      soonestEndDate: matchingRow?.soonestEndDate ?? soonestIntern?.endDate ?? null,
-      replacementStatus,
-      replacementCandidate: matchingRow?.replacementCandidate || '',
-      hcmPic: matchingRow?.hcmPic || '',
-    });
+  // 1. Initialize all teams dynamically from interns
+  interns.forEach((intern) => {
+    const key = getPlacementKey(intern.division, intern.team, intern.position);
+    if (!rows.has(key) && intern.division && intern.team) {
+      rows.set(key, {
+        id: `dynamic-${intern.id}`,
+        division: intern.division,
+        team: intern.team,
+        leader: intern.leader || '-',
+        notes: intern.position || '',
+        activeInstitutionCount: 0,
+        activeProfessionalCount: 0,
+        minimumInstitutionNeed: 1,
+        endingInternName: undefined,
+        soonestEndDate: null,
+        replacementStatus: 'URGENT_EMPTY',
+        replacementCandidate: '',
+        hcmPic: '',
+      });
+    }
   });
+
+  // 2. Merge database configurations and dynamically add any new/custom teams
+  replacementRows.forEach((dbRow) => {
+    const key = getPlacementKey(dbRow.division, dbRow.team, dbRow.notes);
+    const existing = rows.get(key);
+
+    if (existing) {
+      existing.id = dbRow.id;
+      existing.minimumInstitutionNeed = dbRow.minimumInstitutionNeed ?? 1;
+      existing.replacementCandidate = dbRow.replacementCandidate || '';
+      existing.notes = existing.notes || dbRow.notes || '';
+      existing.hcmPic = dbRow.hcmPic || '';
+      existing.leader = existing.leader !== '-' ? existing.leader : (dbRow.leader || '-');
+    } else {
+      rows.set(key, {
+        id: dbRow.id,
+        division: dbRow.division,
+        team: dbRow.team,
+        leader: dbRow.leader || '-',
+        notes: dbRow.notes || '',
+        activeInstitutionCount: 0,
+        activeProfessionalCount: 0,
+        minimumInstitutionNeed: dbRow.minimumInstitutionNeed ?? 1,
+        endingInternName: undefined,
+        soonestEndDate: null,
+        replacementStatus: 'URGENT_EMPTY',
+        replacementCandidate: dbRow.replacementCandidate || '',
+        hcmPic: dbRow.hcmPic || '',
+      });
+    }
+  });
+
+  // 3. Map active interns and calculate status
+  for (const row of rows.values()) {
+    const matchingInterns = interns.filter((intern) => intern.type === 'INSTITUTION' && isSamePlacement(intern, row));
+    const soonestIntern = [...matchingInterns].sort((a, b) => new Date(a.endDate).getTime() - new Date(b.endDate).getTime())[0];
+    
+    const activeInst = matchingInterns.filter((intern) => intern.type === 'INSTITUTION' && intern.status === 'ACTIVE').length;
+    const activeProf = matchingInterns.filter((intern) => intern.type === 'PROFESSIONAL' && intern.status === 'ACTIVE').length;
+
+    row.activeInstitutionCount = activeInst;
+    row.activeProfessionalCount = activeProf;
+    row.soonestEndDate = soonestIntern?.endDate ?? null;
+    row.endingInternName = soonestIntern?.name;
+    row.leader = soonestIntern?.leader || (row.leader !== '-' ? row.leader : '-');
+    row.notes = soonestIntern?.position || row.notes || '';
+    row.replacementStatus = activeInst < row.minimumInstitutionNeed ? 'URGENT_EMPTY' : 'COVERED';
+  }
 
   return [...rows.values()].sort((a, b) => {
     const statusSort = statusPriority[a.replacementStatus] - statusPriority[b.replacementStatus];
