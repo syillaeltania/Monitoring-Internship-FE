@@ -41,4 +41,16 @@ export const toneAccentClass = (tone?: string) =>
     purple: 'bg-[#B9A0F6]',
   })[resolveTone(tone)];
 
+export const resolveToneColor = (tone?: string) =>
+  ({
+    navy: '#0D1429',
+    green: '#8CE0AE',
+    orange: '#F7D95D',
+    red: '#FF684F',
+    cyan: '#3158E8',
+    indigo: '#3158E8',
+    slate: '#77736F',
+    purple: '#B9A0F6',
+  })[resolveTone(tone)];
+
 export const chartPalette = ['#3158E8', '#8CE0AE', '#B9A0F6', '#F7D95D', '#FF684F', '#77736F'];

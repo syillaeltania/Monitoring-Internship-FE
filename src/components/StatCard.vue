@@ -17,5 +17,6 @@ defineProps<{ label: string; value: string | number; tone?: ToneKey }>();
     >
       {{ value }}
     </p>
+    <slot></slot>
   </div>
 </template>

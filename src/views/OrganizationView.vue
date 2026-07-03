@@ -37,10 +37,10 @@ const teamDefinitions: Record<string, Array<{ title: string; subtitle?: string; 
     { title: 'Logistic & Support Internal', role: 'Coordinator', leader: 'M Solehudin', matchTeams: ['LOGISTIC', 'LOGISTIK', 'LOG'] },
   ],
   BUSDEV: [
-    { title: 'SMART', role: 'Coordinator', leader: 'Rahadi Aji', matchTeams: ['SMART (PR)', 'SMART (Admin)', 'SMART'] },
-    { title: 'AM', role: 'PIC', leader: 'Fajar', matchTeams: ['AM'] },
+    { title: 'SMART', role: 'Coordinator', leader: 'Rahadi Aji', matchTeams: ['SMART (PR)', 'SMART (Admin)', 'SMART (Webdev)', 'SMART'] },
+    { title: 'AM', role: 'PIC', leader: 'Fajar', matchTeams: ['AM', 'AM (QA)', 'AM (TW)'] },
     { title: 'RISTECH', role: 'Coordinator', leader: 'Julyan Widianto', matchTeams: ['RISTECH'] },
-    { title: 'AI Dev', subtitle: 'Under RISTECH', role: 'PIC', leader: 'Arrival Dwi Sentosa', matchTeams: ['AI Dev'] },
+    { title: 'AI Dev', subtitle: 'Under RISTECH', role: 'PIC', leader: 'Arrival Dwi Sentosa', matchTeams: ['AI Dev', 'AI Development'] },
     { title: 'DOOR', subtitle: 'Under RISTECH', role: 'PIC', leader: 'M Ramdhani Lukman', matchTeams: ['DOOR'] },
   ],
   TELCO: [
@@ -49,11 +49,11 @@ const teamDefinitions: Record<string, Array<{ title: string; subtitle?: string; 
     { title: 'TELCO 3', subtitle: 'MyTech APK dan BE; MyStaff APK dan BE; UT Online EBIS; UT Online Retail; UT Online Mobile; BROMO; NADIA; IDMT', role: 'PM', leader: 'Fitrian Wahyu', matchTeams: ['TELCO-3'] },
   ],
   'NEW BUSINESS': [
-    { title: 'NEWBUSS 1', subtitle: 'TELKOMSEL: FMC Dashboard Sprint 8; Enhancement Dashboard PPMB; Migration Data', role: 'PM', leader: 'Arief Hermawan', matchTeams: ['NB-1 (TSEL)'] },
-    { title: 'NEWBUSS 2', subtitle: 'TSEL: SIFA, Dashboard Vision', role: 'PM', leader: 'Hafiz Kharisma', matchTeams: ['NB-2 (TSEL)'] },
-    { title: 'NEWBUSS 3', subtitle: 'PGN Billing', role: 'PM', leader: 'Indra Firdaus', matchTeams: ['NB-3 (PGN Billing)', 'NB-3 (PGN Biliing)'] },
-    { title: 'NEWBUSS 4', subtitle: 'PEGADAIAN', role: 'PM', leader: 'Yusuf Eka Andora', matchTeams: ['NB-4 (Pegadaian)'] },
-    { title: 'NEWBUSS 5', subtitle: 'ERP', role: 'PM', leader: 'Farid Firmansyah', matchTeams: ['NB-5 (ERP)'] },
+    { title: 'NEWBUSS 1', subtitle: 'TELKOMSEL: FMC Dashboard Sprint 8; Enhancement Dashboard PPMB; Migration Data', role: 'PM', leader: 'Arief Hermawan', matchTeams: ['NB-1 (TSEL)', 'NB-1'] },
+    { title: 'NEWBUSS 2', subtitle: 'TSEL: SIFA, Dashboard Vision', role: 'PM', leader: 'Hafiz Kharisma', matchTeams: ['NB-2 (TSEL)', 'NB-2 (PGN)', 'NB-2'] },
+    { title: 'NEWBUSS 3', subtitle: 'PGN Billing', role: 'PM', leader: 'Indra Firdaus', matchTeams: ['NB-3 (PGN Billing)', 'NB-3 (PGN Biliing)', 'NB-3'] },
+    { title: 'NEWBUSS 4', subtitle: 'PEGADAIAN', role: 'PM', leader: 'Yusuf Eka Andora', matchTeams: ['NB-4 (Pegadaian)', 'NB-4'] },
+    { title: 'NEWBUSS 5', subtitle: 'ERP', role: 'PM', leader: 'Farid Firmansyah', matchTeams: ['NB-5 (ERP)', 'NB-5'] },
     { title: 'NEWBUSS 6', subtitle: 'DATA SOLUTION: ETL & AI IMPLEMENTATOR', role: 'PM', leader: 'Rijal Permana', matchTeams: ['NB-6', 'DATA SOLUTION'] },
   ],
   MSOS: [

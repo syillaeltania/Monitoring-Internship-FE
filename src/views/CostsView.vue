@@ -149,10 +149,21 @@ watch(filters, async () => {
       <option value="TERMINATED">Terminated</option>
     </select>
   </div>
-  <div class="mb-6 grid gap-4 lg:grid-cols-3">
-    <StatCard label="Total Cost Keseluruhan" :value="rupiah(data.total)" tone="green" />
+  <div class="mb-4 grid gap-4 lg:grid-cols-3">
+    <StatCard label="Total Cost Keseluruhan" :value="rupiah(data.total)" tone="green">
+      <div v-if="data.byType?.length" class="mt-4 space-y-2 text-sm font-medium text-[#77736F]">
+        <div v-for="item in data.byType" :key="item.name" class="flex justify-between border-t border-[#A8E9BE]/60 pt-2">
+          <span>{{ item.name === 'PROFESSIONAL' ? 'Magang Pro' : 'Magang Inst' }}</span>
+          <span class="text-[#2F7F52]">{{ rupiah(item.value) }}</span>
+        </div>
+      </div>
+    </StatCard>
     <SimpleChart title="Cost per Divisi" type="bar" :data="data.byDivision" tone="green" />
     <SimpleChart title="Cost per Tipe" type="pie" :data="data.byType" tone="indigo" />
+  </div>
+  <div class="mb-6 grid gap-4 md:grid-cols-2">
+    <SimpleChart title="Tren Jumlah Peserta" type="line" :data="data.trend || []" tone="cyan" valueFormat="number" />
+    <SimpleChart title="Tren Cost Bulanan" type="line" :data="data.costTrend || []" tone="orange" valueFormat="currency" />
   </div>
 
   <section class="mb-6 grid gap-4 xl:grid-cols-4">
@@ -182,11 +193,17 @@ watch(filters, async () => {
       <p class="text-xs font-semibold uppercase text-[#6F54C8]">Knowledge</p>
       <h2 class="mt-2 text-lg font-semibold text-ink">{{ topDivision?.name ?? '-' }}</h2>
       <p class="mt-1 text-sm text-[#77736F]">Divisi dengan cost terbesar: {{ rupiah(topDivision?.value ?? 0) }}</p>
-      <div class="mt-4 space-y-2 text-sm text-[#77736F]">
-        <p v-for="row in highCostRows" :key="row.id" class="flex justify-between gap-3">
-          <span>{{ row.intern?.name }}</span>
-          <strong class="text-ink">{{ rupiah(row.totalMonthlyCost ?? 0) }}</strong>
-        </p>
+      <div class="mt-4 pt-4 border-t border-[#B9A0F6]/30">
+        <p class="mb-3 text-xs font-semibold uppercase text-[#6F54C8]">Top Cost Peserta</p>
+        <div class="space-y-2 text-sm text-[#77736F]">
+          <div v-for="row in highCostRows" :key="row.id" class="flex justify-between gap-3 items-start">
+            <div class="flex flex-col">
+              <span class="text-ink font-medium">{{ row.intern?.name }}</span>
+              <span class="text-[11px] text-[#77736F]">{{ row.intern?.normalizedDivision || row.intern?.division || '-' }}</span>
+            </div>
+            <strong class="text-ink mt-0.5">{{ rupiah(row.totalMonthlyCost ?? 0) }}</strong>
+          </div>
+        </div>
       </div>
     </article>
 

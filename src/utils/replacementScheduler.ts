@@ -83,11 +83,12 @@ export const normalizePlacementTeam = (team?: string, position?: string) => {
   if (upperTeam === 'NB-4 (PEGADAIAN)' || upperTeam === 'NB-4 (PEGADAIAN)') return 'NB-4 (Pegadaian)';
 
   // MSOS & SQ mappings
-  if (upperTeam === 'MSOS-1' || upperTeam === 'MSOS 1') return 'MSO 1';
-  if (upperTeam === 'MSOS-2' || upperTeam === 'MSOS 2') return 'MSO 2';
-  if (upperTeam === 'MSOS-3' || upperTeam === 'MSOS 3') return 'MSO 3';
-  if (upperTeam === 'MSOS-4' || upperTeam === 'MSOS 4') return 'MSO 4';
-  if (upperTeam === 'MSOS-5' || upperTeam === 'MSOS 5') return 'MSO 5';
+  if (upperTeam === 'MSOS-1' || upperTeam === 'MSOS 1' || upperTeam === 'MSO-1' || upperTeam === 'MSO 1') return 'MSO 1';
+  if (upperTeam === 'MSOS-2' || upperTeam === 'MSOS 2' || upperTeam === 'MSO-2' || upperTeam === 'MSO 2') return 'MSO 2';
+  if (upperTeam === 'MSOS-3' || upperTeam === 'MSOS 3' || upperTeam === 'MSO-3' || upperTeam === 'MSO 3') return 'MSO 3';
+  if (upperTeam === 'MSOS-4' || upperTeam === 'MSOS 4' || upperTeam === 'MSO-4' || upperTeam === 'MSO 4') return 'MSO 4';
+  if (upperTeam === 'MSOS-5' || upperTeam === 'MSOS 5' || upperTeam === 'MSO-5' || upperTeam === 'MSO 5') return 'MSO 5';
+  if (upperTeam === 'MSOS-6' || upperTeam === 'MSOS 6' || upperTeam === 'MSO-6' || upperTeam === 'MSO 6') return 'MSO 6';
   if (upperTeam === 'SQ') return 'Software Quality';
 
   return rawTeam;
