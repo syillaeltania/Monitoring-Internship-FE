@@ -180,6 +180,14 @@ const toBoardItem = (row: SchedulerRow, interns: Intern[], today: Date): Replace
   const soonestEndDate = soonestIntern?.endDate ?? row.soonestEndDate ?? null;
   const daysLeft = soonestEndDate ? daysBetween(today, new Date(soonestEndDate)) : null;
   const activeInstitutionCount = placementInterns.length || row.activeInstitutionCount;
+  
+  const soonestInterns = soonestEndDate 
+    ? placementInterns.filter(i => new Date(i.endDate).getTime() === new Date(soonestEndDate).getTime())
+    : [];
+  const endingInternName = soonestInterns.length > 0 
+    ? soonestInterns.map(i => i.name).join(', ') 
+    : row.endingInternName ?? '-';
+
   const replacementStatus: ReplacementStatus =
     activeInstitutionCount < row.minimumInstitutionNeed ? 'URGENT_EMPTY' : daysLeft !== null && daysLeft >= 0 && daysLeft <= 90 ? 'NEEDS_REPLACEMENT' : 'COVERED';
 
@@ -191,7 +199,7 @@ const toBoardItem = (row: SchedulerRow, interns: Intern[], today: Date): Replace
     activeInstitutionCount,
     activeProfessionalCount: row.activeProfessionalCount,
     minimumInstitutionNeed: row.minimumInstitutionNeed,
-    endingInternName: soonestIntern?.name ?? row.endingInternName ?? '-',
+    endingInternName,
     soonestEndDate,
     daysLeft,
     replacementStatus,

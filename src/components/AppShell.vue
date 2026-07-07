@@ -25,6 +25,7 @@ const navSections = [
       ['/costs', 'Cost'],
       ['/replacement', 'Pergantian'],
       ['/plans', 'Rencana'],
+      ['/profiling-qa', 'Profiling QA'],
       ['/completion', 'Checklist'],
       ['/organization', 'Pemetaan'],
     ],
@@ -40,6 +41,7 @@ const navIconPath: Record<string, string> = {
   '/costs': 'M12 3v18M17 7.5c0-1.4-1.8-2.5-4-2.5s-4 1.1-4 2.5 1.8 2.5 4 2.5 4 1.1 4 2.5-1.8 2.5-4 2.5-4-1.1-4-2.5',
   '/replacement': 'M7 7h10M7 12h10M7 17h6M4 4h16v16H4V4Z',
   '/plans': 'M7 3v4M17 3v4M4 8h16M6 12h4M6 16h7M5 5h14v16H5V5Z',
+  '/profiling-qa': 'M12 2l-5.5 3v6.5c0 4.5 2.5 8.5 5.5 10.5 3-2 5.5-6 5.5-10.5V5L12 2zm-1 13.5l-3-3 1.4-1.4 1.6 1.6 3.6-3.6 1.4 1.4-5 5z',
   '/completion': 'M5 12l4 4L19 6M4 4h16v16H4V4Z',
   '/organization': 'M12 4v4M6 12h12M6 12v6M18 12v6M12 8v4M4 18h4M10 18h4M16 18h4',
 };

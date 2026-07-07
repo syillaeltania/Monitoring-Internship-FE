@@ -174,18 +174,15 @@ onMounted(async () => {
 
         <div class="grid grid-cols-3 items-start gap-5">
           <div class="mt-12">
-            <div class="border border-slate-800 bg-blue-700 px-4 py-2 text-center text-xs font-bold text-white">WAKIL DIREKTUR</div>
-            <div class="border border-t-0 border-slate-800 bg-white px-4 py-2 text-center text-sm text-ink">Agung Widyanga</div>
+            <div class="border border-slate-800 bg-blue-700 px-4 py-3 text-center text-xs font-bold text-white">WAKIL DIREKTUR</div>
           </div>
 
           <div>
-            <div class="border border-slate-800 bg-blue-700 px-4 py-2 text-center text-xs font-bold text-white">DIREKTUR UTAMA / CEO</div>
-            <div class="border border-t-0 border-slate-800 bg-white px-4 py-2 text-center text-sm text-ink">Sriyanto</div>
+            <div class="border border-slate-800 bg-blue-700 px-4 py-3 text-center text-xs font-bold text-white">DIREKTUR UTAMA / CEO</div>
           </div>
 
           <div class="mt-12">
-            <div class="border border-slate-800 bg-blue-700 px-4 py-2 text-center text-xs font-bold text-white">SEKRETARIS</div>
-            <div class="border border-t-0 border-slate-800 bg-white px-4 py-2 text-center text-sm text-ink">Sifa Marcella</div>
+            <div class="border border-slate-800 bg-blue-700 px-4 py-3 text-center text-xs font-bold text-white">SEKRETARIS</div>
           </div>
         </div>
       </div>

@@ -62,3 +62,14 @@ export function uniqueTeams(interns: Intern[], division = ''): string[] {
     ),
   ].sort((a, b) => a.localeCompare(b));
 }
+
+export function uniqueLeaders(interns: Intern[], team = ''): string[] {
+  return [
+    ...new Set(
+      interns
+        .filter((item) => !team || item.team === team)
+        .map((item) => item.leader)
+        .filter(Boolean) as string[],
+    ),
+  ].sort((a, b) => a.localeCompare(b));
+}

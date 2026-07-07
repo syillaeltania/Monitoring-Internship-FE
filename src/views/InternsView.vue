@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, watch } from 'vue';
+import Combobox from '../components/Combobox.vue';
 import DataTable from '../components/DataTable.vue';
 import PageHeader from '../components/PageHeader.vue';
 import StatusBadge from '../components/StatusBadge.vue';
 import { api, type Intern, type InternshipType, type Status } from '../services/api';
 import { dateShort } from '../utils/format';
 import { canDeleteFromInternForm } from '../utils/internActions';
-import { filterInterns, type InternFilters, type InternSortOption, normalizeDivision, sortInterns, uniqueDivisions, uniqueTeams } from '../utils/internFilters';
+import { filterInterns, type InternFilters, type InternSortOption, normalizeDivision, sortInterns, uniqueDivisions, uniqueTeams, uniqueLeaders } from '../utils/internFilters';
 
 const interns = ref<Intern[]>([]);
 const search = ref('');
@@ -61,6 +62,8 @@ const form = reactive<InternForm>(emptyForm());
 
 const divisionOptions = computed(() => uniqueDivisions(interns.value));
 const teamOptions = computed(() => uniqueTeams(interns.value, division.value));
+const formTeamOptions = computed(() => uniqueTeams(interns.value, form.division));
+const formLeaderOptions = computed(() => uniqueLeaders(interns.value, form.team));
 
 const rows = computed(() =>
   sortInterns(
@@ -217,10 +220,10 @@ watch(division, () => {
       </select>
       <input v-model="form.institution" class="control" placeholder="Asal instansi" />
       <input v-model="form.major" class="control" placeholder="Jurusan" />
-      <input v-model="form.division" class="control" placeholder="Divisi" />
-      <input v-model="form.team" class="control" placeholder="Tim" />
+      <Combobox v-model="form.division" :options="divisionOptions" placeholder="Divisi" />
+      <Combobox v-model="form.team" :options="formTeamOptions" placeholder="Tim" />
       <input v-model="form.position" class="control" placeholder="Posisi" />
-      <input v-model="form.leader" class="control" placeholder="Leader / PIC" />
+      <Combobox v-model="form.leader" :options="formLeaderOptions" placeholder="Leader / PIC" />
       <input v-model="form.location" class="control" placeholder="Lokasi" />
       <input v-model="form.startDate" class="control" type="date" />
       <input v-model="form.endDate" class="control" type="date" />

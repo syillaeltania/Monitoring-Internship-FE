@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
+import Combobox from '../components/Combobox.vue';
 import DataTable from '../components/DataTable.vue';
 import PageHeader from '../components/PageHeader.vue';
 import StatusBadge from '../components/StatusBadge.vue';
-import { api } from '../services/api';
+import { api, type Intern } from '../services/api';
 import { dateShort } from '../utils/format';
 import { buildPlanFormFromPlan, emptyPlanForm } from '../utils/planForm';
 import { filterPlansByStatus, getPlanDisplayStatus, isCompletedPlan, sortPlans, type PlanSortMode } from '../utils/planFilters';
+import { uniqueDivisions, uniqueTeams, uniqueLeaders } from '../utils/internFilters';
 
 const plans = ref<any[]>([]);
+const interns = ref<Intern[]>([]);
 const sortMode = ref<PlanSortMode>('statusPriority');
 const statusFilter = ref('');
 const editingPlan = ref<any | null>(null);
@@ -25,6 +28,13 @@ const processStatusOptions = [
   'COMPLETED',
 ];
 const statusFilterOptions = ['', 'WAITING_JOIN', 'ON_GOING', 'COMPLETED'];
+
+const divisionOptions = computed(() => uniqueDivisions(interns.value));
+const formTeamOptions = computed(() => uniqueTeams(interns.value, planForm.value.targetDivision));
+const formLeaderOptions = computed(() => uniqueLeaders(interns.value, planForm.value.targetTeam));
+const editTeamOptions = computed(() => uniqueTeams(interns.value, editPlanForm.value.targetDivision));
+const editLeaderOptions = computed(() => uniqueLeaders(interns.value, editPlanForm.value.targetTeam));
+
 const sortedPlans = computed(() => sortPlans(filterPlansByStatus(plans.value, statusFilter.value), sortMode.value));
 const rows = computed(() =>
   sortedPlans.value.map((item) => ({
@@ -113,7 +123,9 @@ const createPlan = async () => {
 async function loadPlans() {
   loading.value = true;
   try {
-    plans.value = await api.plans();
+    const [plansData, internsData] = await Promise.all([api.plans(), api.interns()]);
+    plans.value = plansData;
+    interns.value = internsData;
   } finally {
     loading.value = false;
   }
@@ -198,17 +210,17 @@ onMounted(loadPlans);
         <label class="block text-sm font-semibold text-slate-600">
           Divisi tujuan
           <span class="ml-1 text-xs font-medium text-slate-400">(opsional)</span>
-          <input v-model="editPlanForm.targetDivision" class="control mt-2 w-full" placeholder="Diisi setelah mapping peserta" />
+          <Combobox v-model="editPlanForm.targetDivision" :options="divisionOptions" placeholder="Diisi setelah mapping peserta" class="mt-2" />
         </label>
         <label class="block text-sm font-semibold text-slate-600">
           Tim tujuan
           <span class="ml-1 text-xs font-medium text-slate-400">(opsional)</span>
-          <input v-model="editPlanForm.targetTeam" class="control mt-2 w-full" placeholder="Diisi setelah mapping peserta" />
+          <Combobox v-model="editPlanForm.targetTeam" :options="editTeamOptions" placeholder="Diisi setelah mapping peserta" class="mt-2" />
         </label>
         <label class="block text-sm font-semibold text-slate-600">
           Leader
           <span class="ml-1 text-xs font-medium text-slate-400">(opsional)</span>
-          <input v-model="editPlanForm.leader" class="control mt-2 w-full" placeholder="Diisi setelah mapping peserta" />
+          <Combobox v-model="editPlanForm.leader" :options="editLeaderOptions" placeholder="Diisi setelah mapping peserta" class="mt-2" />
         </label>
         <label class="block text-sm font-semibold text-slate-600">
           Nomor HP
@@ -298,17 +310,17 @@ onMounted(loadPlans);
         <label class="block text-sm font-semibold text-slate-600">
           Divisi tujuan
           <span class="ml-1 text-xs font-medium text-slate-400">(opsional)</span>
-          <input v-model="planForm.targetDivision" class="control mt-2 w-full" placeholder="Diisi setelah mapping peserta" />
+          <Combobox v-model="planForm.targetDivision" :options="divisionOptions" placeholder="Diisi setelah mapping peserta" class="mt-2" />
         </label>
         <label class="block text-sm font-semibold text-slate-600">
           Tim tujuan
           <span class="ml-1 text-xs font-medium text-slate-400">(opsional)</span>
-          <input v-model="planForm.targetTeam" class="control mt-2 w-full" placeholder="Diisi setelah mapping peserta" />
+          <Combobox v-model="planForm.targetTeam" :options="formTeamOptions" placeholder="Diisi setelah mapping peserta" class="mt-2" />
         </label>
         <label class="block text-sm font-semibold text-slate-600">
           Leader
           <span class="ml-1 text-xs font-medium text-slate-400">(opsional)</span>
-          <input v-model="planForm.leader" class="control mt-2 w-full" placeholder="Diisi setelah mapping peserta" />
+          <Combobox v-model="planForm.leader" :options="formLeaderOptions" placeholder="Diisi setelah mapping peserta" class="mt-2" />
         </label>
         <label class="block text-sm font-semibold text-slate-600">
           Nomor HP

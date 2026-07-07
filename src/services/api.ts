@@ -26,6 +26,10 @@ export interface Intern {
   phone?: string;
   email?: string;
   notes?: string;
+  qaSelfLearning?: boolean;
+  qaPretestScore?: number | null;
+  qaPosttestScore?: number | null;
+  qaNotes?: string;
 }
 
 const fallbackInterns: Intern[] = [
