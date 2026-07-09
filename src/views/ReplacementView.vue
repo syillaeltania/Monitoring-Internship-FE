@@ -275,7 +275,7 @@ onMounted(() => {
               :key="group.division + '-' + group.items.length"
               handle=".drag-handle"
               animation="200"
-              @end="onReorder(group)"
+              @end="onReorder(group.items)"
               tag="div"
             >
               <template #item="{ element: item, index }">
