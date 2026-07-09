@@ -151,6 +151,8 @@ export const api = {
         replacementCandidate: '',
       },
     ]),
+  reorderReplacement: (orders: { id: string; orderNo: number }[]) => http.put('/replacement/reorder', { orders }),
+  toggleTeamVisibility: (id: string, isHidden: boolean) => http.patch(`/replacement/${id}/visibility`, { isHidden }),
   plans: () =>
     request('/plans', [
       {

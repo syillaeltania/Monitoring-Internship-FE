@@ -18,6 +18,8 @@ export interface ReplacementSourceRow {
   replacementStatus?: ReplacementStatus;
   replacementCandidate?: string;
   hcmPic?: string;
+  orderNo?: number;
+  isHidden?: boolean;
 }
 
 export interface SchedulerRow extends ReplacementSourceRow {
@@ -31,6 +33,8 @@ export interface SchedulerRow extends ReplacementSourceRow {
   replacementStatus: ReplacementStatus;
   replacementCandidate: string;
   hcmPic: string;
+  orderNo: number;
+  isHidden: boolean;
 }
 
 export interface EndingSoonReminder {
@@ -247,11 +251,12 @@ export const buildSchedulerRows = (replacementRows: ReplacementSourceRow[], inte
 
   // 1. Initialize all teams dynamically from interns
   interns.forEach((intern) => {
-    const key = getPlacementKey(intern.division, intern.team, intern.position);
-    if (!rows.has(key) && intern.division && intern.team) {
+    const div = normalizedDivision(intern.division);
+    const key = getPlacementKey(div, intern.team, intern.position);
+    if (!rows.has(key) && div && intern.team) {
       rows.set(key, {
         id: `dynamic-${intern.id}`,
-        division: intern.division,
+        division: div,
         team: intern.team,
         leader: intern.leader || '-',
         notes: intern.position || '',
@@ -263,26 +268,33 @@ export const buildSchedulerRows = (replacementRows: ReplacementSourceRow[], inte
         replacementStatus: 'URGENT_EMPTY',
         replacementCandidate: '',
         hcmPic: '',
+        orderNo: 9999,
+        isHidden: false,
       });
     }
   });
 
   // 2. Merge database configurations and dynamically add any new/custom teams
   replacementRows.forEach((dbRow) => {
-    const key = getPlacementKey(dbRow.division, dbRow.team, dbRow.notes);
+    const div = normalizedDivision(dbRow.division);
+    const key = getPlacementKey(div, dbRow.team, dbRow.notes);
     const existing = rows.get(key);
 
     if (existing) {
       existing.id = dbRow.id;
+      existing.division = div;
       existing.minimumInstitutionNeed = dbRow.minimumInstitutionNeed ?? 1;
+      existing.replacementStatus = dbRow.replacementStatus || 'URGENT_EMPTY';
       existing.replacementCandidate = dbRow.replacementCandidate || '';
-      existing.notes = existing.notes || dbRow.notes || '';
+      existing.notes = dbRow.notes || existing.notes || '';
       existing.hcmPic = dbRow.hcmPic || '';
-      existing.leader = existing.leader !== '-' ? existing.leader : (dbRow.leader || '-');
+      existing.leader = dbRow.leader || (existing.leader !== '-' ? existing.leader : '-');
+      existing.orderNo = dbRow.orderNo ?? 9999;
+      existing.isHidden = dbRow.isHidden ?? false;
     } else {
       rows.set(key, {
         id: dbRow.id,
-        division: dbRow.division,
+        division: div,
         team: dbRow.team,
         leader: dbRow.leader || '-',
         notes: dbRow.notes || '',
@@ -291,9 +303,11 @@ export const buildSchedulerRows = (replacementRows: ReplacementSourceRow[], inte
         minimumInstitutionNeed: dbRow.minimumInstitutionNeed ?? 1,
         endingInternName: undefined,
         soonestEndDate: null,
-        replacementStatus: 'URGENT_EMPTY',
+        replacementStatus: dbRow.replacementStatus || 'URGENT_EMPTY',
         replacementCandidate: dbRow.replacementCandidate || '',
         hcmPic: dbRow.hcmPic || '',
+        orderNo: dbRow.orderNo ?? 9999,
+        isHidden: dbRow.isHidden ?? false,
       });
     }
   });
@@ -301,21 +315,26 @@ export const buildSchedulerRows = (replacementRows: ReplacementSourceRow[], inte
   // 3. Map active interns and calculate status
   for (const row of rows.values()) {
     const matchingInterns = interns.filter((intern) => intern.type === 'INSTITUTION' && isSamePlacement(intern, row));
-    const soonestIntern = [...matchingInterns].sort((a, b) => new Date(a.endDate).getTime() - new Date(b.endDate).getTime())[0];
+    const activeInstInterns = matchingInterns.filter((intern) => intern.status === 'ACTIVE');
+    const soonestIntern = [...activeInstInterns].sort((a, b) => new Date(a.endDate).getTime() - new Date(b.endDate).getTime())[0];
     
-    const activeInst = matchingInterns.filter((intern) => intern.type === 'INSTITUTION' && intern.status === 'ACTIVE').length;
-    const activeProf = matchingInterns.filter((intern) => intern.type === 'PROFESSIONAL' && intern.status === 'ACTIVE').length;
+    const activeInst = activeInstInterns.length;
+    const activeProf = interns.filter((intern) => intern.type === 'PROFESSIONAL' && intern.status === 'ACTIVE' && isSamePlacement(intern, row)).length;
 
     row.activeInstitutionCount = activeInst;
     row.activeProfessionalCount = activeProf;
     row.soonestEndDate = soonestIntern?.endDate ?? null;
     row.endingInternName = soonestIntern?.name;
-    row.leader = soonestIntern?.leader || (row.leader !== '-' ? row.leader : '-');
-    row.notes = soonestIntern?.position || row.notes || '';
+    // Removed overriding of leader and notes so the merged data from DB is used
     row.replacementStatus = activeInst < row.minimumInstitutionNeed ? 'URGENT_EMPTY' : 'COVERED';
   }
 
   return [...rows.values()].sort((a, b) => {
+    // Custom order takes precedence if user has defined it (orderNo != 9999)
+    if (a.orderNo !== 9999 || b.orderNo !== 9999) {
+      return a.orderNo - b.orderNo || `${a.division}${a.team}`.localeCompare(`${b.division}${b.team}`);
+    }
+    // Fallback to original urgency sorting
     const statusSort = statusPriority[a.replacementStatus] - statusPriority[b.replacementStatus];
     if (statusSort !== 0) return statusSort;
     const dateA = a.soonestEndDate ? new Date(a.soonestEndDate).getTime() : Number.MAX_SAFE_INTEGER;

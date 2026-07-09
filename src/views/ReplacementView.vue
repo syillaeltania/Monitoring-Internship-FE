@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
+import draggable from 'vuedraggable';
 import DataTable from '../components/DataTable.vue';
 import PageHeader from '../components/PageHeader.vue';
 import StatCard from '../components/StatCard.vue';
@@ -15,6 +16,7 @@ const loading = ref(false);
 const activeTab = ref<ReplacementTabKey>('scheduler');
 const monthLabels = ['JAN', 'FEB', 'MAR', 'APR', 'MEI', 'JUN', 'JUL', 'AGU', 'SEP', 'OKT', 'NOV', 'DES'];
 const visibleDivisions = ref<Record<string, boolean>>({});
+const showHidden = ref(false);
 
 const formatDate = (value?: string | null) => (value ? new Date(value).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) : '-');
 const formatDays = (value: number | null) => (value === null ? '-' : value < 0 ? 'Lewat periode' : `${value} hari`);
@@ -46,14 +48,17 @@ const summary = computed(() => ({
   monitored: timelineItems.value.length,
 }));
 
-const timelineByDivision = computed(() => {
-  const groups = new Map<string, typeof timelineItems.value>();
-  timelineItems.value.forEach((item) => {
+const localTimelineByDivision = ref<Array<{ division: string; items: any[] }>>([]);
+
+watch([timelineItems, showHidden], ([newVal, show]) => {
+  const groups = new Map<string, any[]>();
+  newVal.forEach((item) => {
+    if (item.isHidden && !show) return;
     const division = item.division || '-';
     groups.set(division, [...(groups.get(division) ?? []), item]);
   });
-  return [...groups.entries()].map(([division, items]) => ({ division, items }));
-});
+  localTimelineByDivision.value = [...groups.entries()].map(([division, items]) => ({ division, items }));
+}, { immediate: true });
 
 const rows = computed(() =>
   timelineItems.value.map((item) => ({
@@ -88,7 +93,7 @@ const boardCardClass = (item: ReplacementBoardItem) => {
   return 'border-emerald-100 bg-white';
 };
 
-onMounted(async () => {
+async function loadData() {
   loading.value = true;
   try {
     const [replacementData, internData] = await Promise.all([api.replacement(), api.interns()]);
@@ -97,6 +102,43 @@ onMounted(async () => {
   } finally {
     loading.value = false;
   }
+}
+
+async function toggleVisibility(item: any) {
+  if (item.id.startsWith('dynamic-')) {
+    window.alert('Tim ini memiliki peserta magang aktif, sehingga tidak bisa disembunyikan. Silakan edit atau hapus peserta terlebih dahulu.');
+    return;
+  }
+  
+  const actionText = item.isHidden ? 'menampilkan kembali' : 'menyembunyikan';
+  if (!window.confirm(`Yakin ingin ${actionText} tim ini dari pantauan?`)) return;
+  
+  try {
+    await api.toggleTeamVisibility(item.id, !item.isHidden);
+    await loadData();
+  } catch (error) {
+    console.error(error);
+    window.alert(`Gagal ${actionText} tim.`);
+  }
+}
+
+async function onReorder(divisionItems: any[]) {
+  const orders = divisionItems.map((item, index) => ({ id: item.id, orderNo: index }));
+  const validOrders = orders.filter(o => !o.id.startsWith('dynamic-'));
+  
+  if (validOrders.length > 0) {
+    try {
+      await api.reorderReplacement(validOrders);
+      // Data updated locally, no need to reload completely unless we want to sync
+    } catch (error) {
+      console.error(error);
+      window.alert('Gagal menyimpan urutan tim.');
+    }
+  }
+}
+
+onMounted(() => {
+  loadData();
 });
 </script>
 
@@ -193,14 +235,21 @@ onMounted(async () => {
         <h2 class="text-sm font-semibold text-ink">Scheduler Pergantian Magang</h2>
         <p class="mt-1 text-sm text-slate-500">Matrix bulanan seperti worksheet pergantian: tim, posisi, dan peserta aktif per bulan.</p>
       </div>
-      <select v-model.number="selectedYear" class="control w-32">
-        <option v-for="year in yearOptions" :key="year" :value="year">{{ year }}</option>
-      </select>
+      <div class="flex items-center gap-4">
+        <label class="flex items-center gap-2 text-sm text-slate-600 cursor-pointer">
+          <input type="checkbox" v-model="showHidden" class="rounded border-slate-300 text-brand-500 focus:ring-brand-500" />
+          Tampilkan tim tersembunyi
+        </label>
+        <select v-model.number="selectedYear" class="control w-32">
+          <option v-for="year in yearOptions" :key="year" :value="year">{{ year }}</option>
+        </select>
+      </div>
     </div>
-
+    
     <div class="space-y-4">
-      <div v-for="group in timelineByDivision" :key="group.division" class="overflow-hidden rounded-md border border-slate-200">
-        <button class="flex w-full items-center justify-between bg-slate-50 px-4 py-3 text-left" @click="toggleDivision(group.division)">
+
+        <div v-for="group in localTimelineByDivision" :key="group.division" class="overflow-hidden rounded-md border border-slate-200">
+        <button class="flex w-full items-center justify-between bg-slate-50 px-4 py-3 text-left hover:bg-slate-100 transition" @click="toggleDivision(group.division)">
           <div>
             <p class="text-sm font-semibold text-ink">{{ group.division }}</p>
             <p class="mt-1 text-xs text-slate-500">{{ group.items.length }} tim terpantau</p>
@@ -220,33 +269,56 @@ onMounted(async () => {
               </template>
             </div>
 
-            <div
-              v-for="(item, index) in group.items"
-              :key="item.id"
-              class="grid min-h-20 grid-cols-[48px_120px_136px_repeat(12,minmax(92px,1fr))] text-xs"
+            <draggable
+              v-model="group.items"
+              itemKey="id"
+              :key="group.division + '-' + group.items.length"
+              handle=".drag-handle"
+              animation="200"
+              @end="onReorder(group)"
+              tag="div"
             >
-              <div class="flex items-center justify-center border-b border-r border-slate-300 bg-slate-50 font-semibold text-slate-600">{{ index + 1 }}</div>
-              <div class="flex items-center border-b border-r border-slate-300 bg-slate-100 p-3 font-semibold text-slate-700">{{ item.team }}</div>
-              <div class="flex items-center border-b border-r border-slate-300 bg-slate-50 p-3 text-slate-700">{{ item.notes || item.leader || '-' }}</div>
+              <template #item="{ element: item, index }">
+                <div v-show="!item.isHidden || showHidden" class="group/row grid min-h-20 grid-cols-[48px_120px_136px_repeat(12,minmax(92px,1fr))] text-xs" :class="{ 'opacity-50 grayscale': item.isHidden }">
+                  <div class="drag-handle flex cursor-grab items-center justify-center border-b border-r border-slate-300 bg-slate-50 font-semibold text-slate-400 hover:bg-slate-200 hover:text-slate-600 active:cursor-grabbing" title="Tahan dan geser untuk mengurutkan">
+                    ☰
+                  </div>
+                  <div class="relative flex items-center border-b border-r border-slate-300 bg-slate-100 p-3 font-semibold text-slate-700">
+                    {{ item.team }}
+                    <button 
+                      class="absolute right-1 top-1 hidden rounded-md bg-white p-1 shadow-sm transition hover:bg-slate-50 group-hover/row:block" 
+                      :class="item.isHidden ? 'text-emerald-500 hover:text-emerald-700' : 'text-slate-400 hover:text-slate-600'"
+                      :title="item.isHidden ? 'Tampilkan tim' : 'Sembunyikan tim'" 
+                      @click="toggleVisibility(item)"
+                    >
+                      <svg v-if="!item.isHidden" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>
+                      <svg v-else class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                    </button>
+                  </div>
+                  <div class="flex items-center border-b border-r border-slate-300 bg-slate-50 p-3 text-slate-700">
+                    {{ item.notes || item.leader || '-' }}
+                  </div>
 
-              <div
-                v-for="(_, monthIndex) in monthLabels"
-                :key="monthIndex"
-                class="border-b border-r border-slate-300 p-2 last:border-r-0"
-                :class="{
-                  'bg-white': cellTone(item, monthIndex) === 'empty',
-                  'bg-slate-200': cellTone(item, monthIndex) === 'active',
-                  'bg-yellow-200': cellTone(item, monthIndex) === 'ending',
-                  'bg-slate-500 text-white': cellTone(item, monthIndex) === 'multi',
-                }"
-              >
-                <div v-if="monthInterns(item, monthIndex).length" class="space-y-1 leading-snug">
-                  <p v-for="(intern, internIndex) in monthInterns(item, monthIndex)" :key="intern.id">
-                    {{ internIndex + 1 }}. {{ intern.institution || '-' }} - {{ firstName(intern.name) }}
-                  </p>
+                  <div
+                    v-for="(_, monthIndex) in monthLabels"
+                    :key="monthIndex"
+                    class="border-b border-r border-slate-300 p-2 last:border-r-0"
+                    :class="{
+                      'bg-white': cellTone(item, monthIndex) === 'empty',
+                      'bg-slate-200': cellTone(item, monthIndex) === 'active',
+                      'bg-yellow-200': cellTone(item, monthIndex) === 'ending',
+                      'bg-slate-500 text-white': cellTone(item, monthIndex) === 'multi',
+                    }"
+                  >
+                    <div v-if="monthInterns(item, monthIndex).length" class="space-y-1 leading-snug">
+                      <p v-for="(intern, internIndex) in monthInterns(item, monthIndex)" :key="intern.id">
+                        {{ internIndex + 1 }}. {{ intern.institution || '-' }} - {{ firstName(intern.name) }}
+                      </p>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
+              </template>
+            </draggable>
           </div>
         </div>
       </div>

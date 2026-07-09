@@ -28,6 +28,7 @@ const processStatusOptions = [
   'COMPLETED',
 ];
 const statusFilterOptions = ['', 'WAITING_JOIN', 'ON_GOING', 'COMPLETED'];
+const searchQuery = ref('');
 
 const divisionOptions = computed(() => uniqueDivisions(interns.value));
 const formTeamOptions = computed(() => uniqueTeams(interns.value, planForm.value.targetDivision));
@@ -35,7 +36,13 @@ const formLeaderOptions = computed(() => uniqueLeaders(interns.value, planForm.v
 const editTeamOptions = computed(() => uniqueTeams(interns.value, editPlanForm.value.targetDivision));
 const editLeaderOptions = computed(() => uniqueLeaders(interns.value, editPlanForm.value.targetTeam));
 
-const sortedPlans = computed(() => sortPlans(filterPlansByStatus(plans.value, statusFilter.value), sortMode.value));
+const sortedPlans = computed(() => {
+  const filtered = filterPlansByStatus(plans.value, statusFilter.value).filter(plan => {
+    if (!searchQuery.value) return true;
+    return plan.name.toLowerCase().includes(searchQuery.value.toLowerCase());
+  });
+  return sortPlans(filtered, sortMode.value);
+});
 const rows = computed(() =>
   sortedPlans.value.map((item) => ({
     id: item.id,
@@ -140,11 +147,12 @@ onMounted(loadPlans);
   </PageHeader>
 
   <section class="panel mb-4 p-4">
-    <div class="grid gap-3 lg:grid-cols-[1fr_260px_260px]">
+    <div class="grid gap-3 lg:grid-cols-[1fr_200px_200px_200px]">
       <div>
         <p class="text-sm font-semibold text-ink">Filter Rencana</p>
         <p class="mt-1 text-xs text-slate-500">Urutkan dan pantau peserta berdasarkan status proses join.</p>
       </div>
+      <input v-model="searchQuery" class="control" placeholder="Cari nama..." />
       <select v-model="statusFilter" class="control">
         <option v-for="status in statusFilterOptions" :key="status || 'all'" :value="status">
           {{ status ? status.replaceAll('_', ' ') : 'Semua status proses' }}
