@@ -12,43 +12,20 @@ defineProps<{ title: string; subtitle: string }>();
     <!-- Main Container -->
     <div class="relative z-10 flex min-h-screen items-center justify-center p-4 sm:p-6 lg:p-8">
       <div class="w-full max-w-6xl overflow-hidden rounded-[2rem] border border-white/10 bg-white shadow-2xl lg:grid lg:grid-cols-[1.2fr_1fr]">
-        
-        <!-- Left Section (Premium Dark/Gradient) -->
-        <section class="relative hidden overflow-hidden bg-slate-950 p-12 text-white lg:flex lg:flex-col lg:justify-between">
-          <!-- Inner Decorative Gradient -->
-          <div class="absolute inset-0 bg-gradient-to-br from-blue-600/20 via-indigo-900/40 to-slate-950"></div>
-          <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
-
+        <!-- Left Section (Illustration) -->
+        <section class="relative hidden overflow-hidden bg-[#0f172a] p-12 text-white lg:flex lg:flex-col lg:justify-between">
           <div class="relative z-10">
-            <div class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 backdrop-blur-md">
-              <span class="h-2 w-2 rounded-full bg-blue-400"></span>
-              <span class="text-xs font-semibold tracking-wide text-blue-100">Neuron HCM</span>
+            <div class="inline-flex items-center gap-2 font-bold text-white text-xl">
+              <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white">N</span>
+              Neuron HCM
             </div>
-            
-            <h1 class="mt-8 text-5xl font-extrabold leading-[1.1] tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">
-              Monitoring<br />Internship
-            </h1>
-            <p class="mt-6 max-w-md text-lg leading-relaxed text-slate-300">
-              Manage internship lifecycle, placement, cost, and progress in one unified, intelligent workspace.
-            </p>
           </div>
-
-          <!-- Glassmorphism Cards Decor -->
-          <div class="relative z-10 mt-12 grid grid-cols-2 gap-4">
-            <div class="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-lg transition-all hover:bg-white/10">
-              <div class="mb-4 h-10 w-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
-                <svg class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
-              </div>
-              <p class="text-2xl font-bold text-white group-hover:scale-105 transition-transform">98%</p>
-              <p class="mt-1 text-xs font-medium text-slate-400">Placement Success</p>
-            </div>
-            <div class="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-lg transition-all hover:bg-white/10">
-              <div class="mb-4 h-10 w-10 rounded-xl bg-purple-500/20 flex items-center justify-center">
-                <svg class="h-5 w-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-              </div>
-              <p class="text-2xl font-bold text-white group-hover:scale-105 transition-transform">500+</p>
-              <p class="mt-1 text-xs font-medium text-slate-400">Active Interns</p>
-            </div>
+          
+          <div class="relative z-10 mt-12 flex-1 flex flex-col items-center justify-center text-center">
+            <h1 class="text-4xl font-extrabold leading-[1.3] tracking-tight text-white mb-8">
+              Manage Internships<br/>Like A Pro.<br/>From Anywhere.
+            </h1>
+            <img src="/login-illustration-dark.png" alt="3D Illustration" class="w-full max-w-[400px] object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-500" />
           </div>
         </section>
 

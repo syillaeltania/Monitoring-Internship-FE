@@ -5,7 +5,7 @@ import DataTable from '../components/DataTable.vue';
 import PageHeader from '../components/PageHeader.vue';
 import StatusBadge from '../components/StatusBadge.vue';
 import { api, type Intern, type InternshipType, type Status } from '../services/api';
-import { dateShort } from '../utils/format';
+import { dateShort, calculateElapsedDuration } from '../utils/format';
 import { canDeleteFromInternForm } from '../utils/internActions';
 import { filterInterns, type InternFilters, type InternSortOption, normalizeDivision, sortInterns, uniqueDivisions, uniqueTeams, uniqueLeaders } from '../utils/internFilters';
 
@@ -86,6 +86,7 @@ const rows = computed(() =>
       Leader: item.leader,
       Masuk: dateShort(item.startDate),
       Selesai: dateShort(item.endDate),
+      Lifetime: calculateElapsedDuration(item.startDate, item.endDate),
       Durasi: item.durationLabel,
       Status: item.status,
       Aksi: item.id,
@@ -284,7 +285,7 @@ watch(division, () => {
   <p v-if="feedback && !isFormOpen" class="mb-3 text-sm text-slate-600">{{ feedback }}</p>
 
   <DataTable
-    :columns="['Nama', 'Tipe', 'Instansi', 'Divisi', 'Tim', 'Posisi', 'Leader', 'Masuk', 'Selesai', 'Durasi', 'Status', 'Aksi']"
+    :columns="['Nama', 'Tipe', 'Instansi', 'Divisi', 'Tim', 'Posisi', 'Leader', 'Masuk', 'Selesai', 'Lifetime', 'Durasi', 'Status', 'Aksi']"
     :rows="rows"
     :loading="loading"
     empty-message="Tidak ada peserta yang sesuai dengan filter."

@@ -29,6 +29,7 @@ const processStatusOptions = [
 ];
 const statusFilterOptions = ['', 'WAITING_JOIN', 'ON_GOING', 'COMPLETED'];
 const searchQuery = ref('');
+const searchField = ref('all');
 
 const divisionOptions = computed(() => uniqueDivisions(interns.value));
 const formTeamOptions = computed(() => uniqueTeams(interns.value, planForm.value.targetDivision));
@@ -39,7 +40,21 @@ const editLeaderOptions = computed(() => uniqueLeaders(interns.value, editPlanFo
 const sortedPlans = computed(() => {
   const filtered = filterPlansByStatus(plans.value, statusFilter.value).filter(plan => {
     if (!searchQuery.value) return true;
-    return plan.name.toLowerCase().includes(searchQuery.value.toLowerCase());
+    const q = searchQuery.value.toLowerCase();
+    
+    if (searchField.value === 'name') return plan.name && plan.name.toLowerCase().includes(q);
+    if (searchField.value === 'team') return plan.targetTeam && plan.targetTeam.toLowerCase().includes(q);
+    if (searchField.value === 'division') return plan.targetDivision && plan.targetDivision.toLowerCase().includes(q);
+    if (searchField.value === 'leader') return plan.leader && plan.leader.toLowerCase().includes(q);
+    if (searchField.value === 'institution') return plan.institution && plan.institution.toLowerCase().includes(q);
+    
+    return (
+      (plan.name && plan.name.toLowerCase().includes(q)) ||
+      (plan.targetTeam && plan.targetTeam.toLowerCase().includes(q)) ||
+      (plan.targetDivision && plan.targetDivision.toLowerCase().includes(q)) ||
+      (plan.leader && plan.leader.toLowerCase().includes(q)) ||
+      (plan.institution && plan.institution.toLowerCase().includes(q))
+    );
   });
   return sortPlans(filtered, sortMode.value);
 });
@@ -147,12 +162,22 @@ onMounted(loadPlans);
   </PageHeader>
 
   <section class="panel mb-4 p-4">
-    <div class="grid gap-3 lg:grid-cols-[1fr_200px_200px_200px]">
+    <div class="grid gap-3 lg:grid-cols-[1fr_280px_200px_200px]">
       <div>
         <p class="text-sm font-semibold text-ink">Filter Rencana</p>
         <p class="mt-1 text-xs text-slate-500">Urutkan dan pantau peserta berdasarkan status proses join.</p>
       </div>
-      <input v-model="searchQuery" class="control" placeholder="Cari nama..." />
+      <div class="flex">
+        <select v-model="searchField" class="control w-28 rounded-r-none border-r-0 bg-slate-50 px-2 py-1.5 focus:z-10 focus:ring-1">
+          <option value="all">Semua</option>
+          <option value="name">Nama</option>
+          <option value="team">Tim</option>
+          <option value="division">Divisi</option>
+          <option value="leader">Leader</option>
+          <option value="institution">Instansi</option>
+        </select>
+        <input v-model="searchQuery" class="control w-full rounded-l-none focus:z-10 focus:ring-1" placeholder="Pencarian..." />
+      </div>
       <select v-model="statusFilter" class="control">
         <option v-for="status in statusFilterOptions" :key="status || 'all'" :value="status">
           {{ status ? status.replaceAll('_', ' ') : 'Semua status proses' }}

@@ -8,8 +8,8 @@ import { dateShort } from '../utils/format';
 
 const interns = ref<Intern[]>([]);
 const search = ref('');
-const yearFilter = ref('2025');
-const statusFilter = ref('all');
+const yearFilter = ref('all');
+const statusFilter = ref('ACTIVE');
 const sortMode = ref('oldest');
 const isFormOpen = ref(false);
 const editingId = ref('');
