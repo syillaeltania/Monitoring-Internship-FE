@@ -8,6 +8,7 @@ import { rupiah } from '../utils/format';
 import { divisionCategories } from '../utils/internFilters';
 import {
   buildCsv,
+  buildExcel,
   filterReportInterns,
   participantHeaders,
   participantRows,
@@ -28,7 +29,8 @@ const costs = ref<any>({ rows: [] });
 const replacement = ref<any[]>([]);
 const completion = ref<any[]>([]);
 const filters = reactive<ReportFilters>({
-  year: String(today.getFullYear()),
+  year: '',
+  endYear: '',
   month: '',
   division: '',
   type: '',
@@ -147,7 +149,7 @@ function checklistProgress(item: Record<string, unknown>) {
 }
 
 function exportCsv() {
-  exportStatus.value = 'Menyiapkan export Excel...';
+  exportStatus.value = 'Menyiapkan export CSV...';
   const rows = reportRows.value.map((row) => reportColumns.value.map((column) => row[column] as string | number | null | undefined));
   const csv = buildCsv(reportColumns.value, rows);
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
@@ -157,7 +159,14 @@ function exportCsv() {
   link.download = `report-${reportKind.value}-${new Date().toISOString().slice(0, 10)}.csv`;
   link.click();
   URL.revokeObjectURL(url);
-  exportStatus.value = `Export selesai: ${reportRows.value.length} data.`;
+  exportStatus.value = `Export CSV selesai: ${reportRows.value.length} data.`;
+}
+
+function exportExcel() {
+  exportStatus.value = 'Menyiapkan export Excel...';
+  const rows = reportRows.value.map((row) => reportColumns.value.map((column) => row[column] as string | number | null | undefined));
+  buildExcel(reportColumns.value, rows, `report-${reportKind.value}-${new Date().toISOString().slice(0, 10)}`);
+  exportStatus.value = `Export Excel selesai: ${reportRows.value.length} data.`;
 }
 
 function exportPdf() {
@@ -193,12 +202,13 @@ onMounted(loadData);
           <p class="mt-2 text-sm text-slate-500">{{ selectedKind.description }}</p>
         </div>
         <div class="flex flex-wrap gap-3">
-          <button class="action-secondary" @click="exportCsv">Excel/CSV</button>
+          <button class="action-secondary" @click="exportExcel">Excel</button>
+          <button class="action-secondary" @click="exportCsv">CSV</button>
           <button class="action-secondary" @click="exportPdf">PDF</button>
         </div>
       </div>
 
-      <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+      <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
         <select v-model="reportKind" class="control">
           <option v-for="item in reportKinds" :key="item.value" :value="item.value">{{ item.label }}</option>
         </select>
@@ -206,7 +216,12 @@ onMounted(loadData);
           <option v-for="month in reportMonthOptions" :key="month.value" :value="month.value">{{ month.label }}</option>
         </select>
         <select v-model="filters.year" class="control">
-          <option v-for="year in yearOptions" :key="year" :value="String(year)">{{ year }}</option>
+          <option value="">Semua Tahun Mulai</option>
+          <option v-for="year in yearOptions" :key="year" :value="String(year)">Mulai: {{ year }}</option>
+        </select>
+        <select v-model="filters.endYear" class="control">
+          <option value="">Semua Tahun Selesai</option>
+          <option v-for="year in yearOptions" :key="year" :value="String(year)">Selesai: {{ year }}</option>
         </select>
         <select v-model="filters.type" class="control">
           <option value="">Semua tipe</option>

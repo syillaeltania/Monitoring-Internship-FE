@@ -5,6 +5,7 @@ export type ReportKind = 'participants' | 'cost' | 'replacement' | 'checklist';
 
 export interface ReportFilters {
   year: string;
+  endYear: string;
   month: string;
   division: string;
   type: '' | InternshipType;
@@ -55,11 +56,12 @@ export function filterReportInterns(interns: Intern[], filters: ReportFilters) {
 
   return interns.filter((intern) => {
     const matchesPeriod = !range || (toDate(intern.startDate) <= range.end && toDate(intern.endDate) >= range.start);
+    const matchesEndYear = !filters.endYear || new Date(intern.endDate).getFullYear().toString() === filters.endYear;
     const matchesDivision = !filters.division || normalizeDivision(intern.division) === filters.division;
     const matchesType = !filters.type || intern.type === filters.type;
     const matchesStatus = !filters.status || intern.status === filters.status;
     const matchesLeader = !leader || (intern.leader ?? '').toLowerCase().includes(leader);
-    return matchesPeriod && matchesDivision && matchesType && matchesStatus && matchesLeader;
+    return matchesPeriod && matchesEndYear && matchesDivision && matchesType && matchesStatus && matchesLeader;
   });
 }
 
@@ -74,10 +76,19 @@ export function summarizeReportInterns(interns: Intern[]) {
   };
 }
 
+import * as XLSX from 'xlsx';
+
 export function buildCsv(headers: string[], rows: Array<Array<string | number | null | undefined>>) {
   return [headers, ...rows]
     .map((row) => row.map((cell) => `"${String(cell ?? '').replace(/"/g, '""')}"`).join(','))
     .join('\n');
+}
+
+export function buildExcel(headers: string[], rows: Array<Array<string | number | null | undefined>>, filename: string) {
+  const worksheet = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Report');
+  XLSX.writeFile(workbook, `${filename}.xlsx`);
 }
 
 export const participantHeaders = ['Nama', 'Tipe', 'Instansi', 'Divisi', 'Tim', 'Posisi', 'Leader', 'Tanggal Masuk', 'Tanggal Selesai', 'Status', 'Email', 'No HP', 'Notes'];

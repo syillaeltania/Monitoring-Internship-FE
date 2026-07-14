@@ -18,8 +18,14 @@ const monthLabels = ['JAN', 'FEB', 'MAR', 'APR', 'MEI', 'JUN', 'JUL', 'AGU', 'SE
 const visibleDivisions = ref<Record<string, boolean>>({});
 const showHidden = ref(false);
 
+const selectedInternInfo = ref<Intern | null>(null);
+
 const formatDate = (value?: string | null) => (value ? new Date(value).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) : '-');
 const formatDays = (value: number | null) => (value === null ? '-' : value < 0 ? 'Lewat periode' : `${value} hari`);
+
+const showInternInfo = (intern: Intern) => {
+  selectedInternInfo.value = intern;
+};
 
 const timelineItems = computed(() => buildSchedulerRows(replacement.value, interns.value));
 const replacementBoard = computed(() => buildReplacementBoard(timelineItems.value, interns.value));
@@ -311,7 +317,13 @@ onMounted(() => {
                     }"
                   >
                     <div v-if="monthInterns(item, monthIndex).length" class="space-y-1 leading-snug">
-                      <p v-for="(intern, internIndex) in monthInterns(item, monthIndex)" :key="intern.id">
+                      <p 
+                        v-for="(intern, internIndex) in monthInterns(item, monthIndex)" 
+                        :key="intern.id"
+                        class="cursor-pointer hover:underline hover:opacity-80 transition"
+                        @click.stop="showInternInfo(intern)"
+                        title="Klik untuk melihat detail"
+                      >
                         {{ internIndex + 1 }}. {{ intern.institution || '-' }} - {{ firstName(intern.name) }}
                       </p>
                     </div>
@@ -335,4 +347,40 @@ onMounted(() => {
       <template #Status="{ row }"><StatusBadge :value="String(row.Status)" /></template>
     </DataTable>
   </section>
+
+  <!-- Popup Intern Info Modal -->
+  <div v-if="selectedInternInfo" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm" @click.self="selectedInternInfo = null">
+    <div class="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl relative animate-in fade-in zoom-in-95 duration-200">
+      <button class="absolute top-4 right-4 text-slate-400 hover:text-slate-600" @click="selectedInternInfo = null">✕</button>
+      
+      <div class="flex items-center gap-3 mb-5">
+        <div class="flex h-12 w-12 items-center justify-center rounded-full bg-blue-50 text-blue-600 font-bold text-xl">
+          {{ firstName(selectedInternInfo.name).charAt(0).toUpperCase() }}
+        </div>
+        <div>
+          <h3 class="text-lg font-bold text-slate-900 leading-tight">{{ selectedInternInfo.name }}</h3>
+          <p class="text-sm font-medium text-slate-500">{{ selectedInternInfo.institution || '-' }}</p>
+        </div>
+      </div>
+      
+      <div class="space-y-3 rounded-xl border border-slate-100 bg-slate-50/50 p-4">
+        <div class="flex justify-between items-center text-sm">
+          <span class="text-slate-500">Join Date</span>
+          <span class="font-semibold text-slate-700">{{ formatDate(selectedInternInfo.startDate) }}</span>
+        </div>
+        <div class="flex justify-between items-center text-sm">
+          <span class="text-slate-500">End Date</span>
+          <span class="font-semibold text-slate-700">{{ formatDate(selectedInternInfo.endDate) }}</span>
+        </div>
+        <div class="flex justify-between items-center text-sm pt-2 mt-2 border-t border-slate-200">
+          <span class="text-slate-500">Durasi Magang</span>
+          <span class="font-semibold text-slate-700">{{ selectedInternInfo.durationLabel }}</span>
+        </div>
+      </div>
+      
+      <button class="mt-6 w-full action-primary justify-center" @click="selectedInternInfo = null">
+        Tutup
+      </button>
+    </div>
+  </div>
 </template>
