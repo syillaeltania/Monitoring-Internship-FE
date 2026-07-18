@@ -1,11 +1,17 @@
 <script setup lang="ts">
+import { RouterLink } from 'vue-router';
 import { toneAccentClass, toneTextClass, toneWidgetClass, type ToneKey } from '../utils/designSystem';
 
-defineProps<{ label: string; value: string | number; tone?: ToneKey }>();
+defineProps<{ label: string; value: string | number; tone?: ToneKey; to?: string }>();
 </script>
 
 <template>
-  <div class="panel group relative overflow-hidden p-5 transition duration-300 hover:shadow-lg" :class="toneWidgetClass(tone)">
+  <component
+    :is="to ? RouterLink : 'div'"
+    :to="to"
+    class="panel group relative block overflow-hidden p-5 transition-all duration-300 hover:shadow-lg"
+    :class="[toneWidgetClass(tone), to ? 'hover:-translate-y-1 cursor-pointer' : '']"
+  >
     <div class="absolute inset-x-0 top-0 h-1" :class="toneAccentClass(tone)"></div>
     <div class="flex items-start justify-between gap-3">
       <p class="text-sm font-semibold text-[#77736F]">{{ label }}</p>
@@ -18,5 +24,5 @@ defineProps<{ label: string; value: string | number; tone?: ToneKey }>();
       {{ value }}
     </p>
     <slot></slot>
-  </div>
+  </component>
 </template>
