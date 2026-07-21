@@ -6,6 +6,7 @@ const props = defineProps<{
   options: string[];
   placeholder?: string;
   required?: boolean;
+  maxItems?: number;
 }>();
 
 const emit = defineEmits<{
@@ -18,7 +19,8 @@ const listRef = ref<HTMLUListElement | null>(null);
 
 const filteredOptions = computed(() => {
   const query = props.modelValue.toLowerCase();
-  return props.options.filter(opt => opt.toLowerCase().includes(query));
+  const filtered = props.options.filter(opt => opt.toLowerCase().includes(query));
+  return props.maxItems ? filtered.slice(0, props.maxItems) : filtered;
 });
 
 const selectOption = (opt: string) => {

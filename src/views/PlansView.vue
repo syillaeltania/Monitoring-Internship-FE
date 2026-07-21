@@ -162,13 +162,13 @@ onMounted(loadPlans);
   </PageHeader>
 
   <section class="panel mb-4 p-4">
-    <div class="grid gap-3 lg:grid-cols-[1fr_280px_200px_200px]">
+    <div class="grid items-center gap-3 lg:grid-cols-[1fr_2fr_1.5fr_1.8fr]">
       <div>
         <p class="text-sm font-semibold text-ink">Filter Rencana</p>
         <p class="mt-1 text-xs text-slate-500">Urutkan dan pantau peserta berdasarkan status proses join.</p>
       </div>
       <div class="flex">
-        <select v-model="searchField" class="control w-28 rounded-r-none border-r-0 bg-slate-50 px-2 py-1.5 focus:z-10 focus:ring-1">
+        <select v-model="searchField" class="control w-28 rounded-r-none border-r-0 bg-slate-50 px-2 py-1.5 pr-8 focus:z-10 focus:ring-1">
           <option value="all">Semua</option>
           <option value="name">Nama</option>
           <option value="team">Tim</option>
@@ -178,12 +178,12 @@ onMounted(loadPlans);
         </select>
         <input v-model="searchQuery" class="control w-full rounded-l-none focus:z-10 focus:ring-1" placeholder="Pencarian..." />
       </div>
-      <select v-model="statusFilter" class="control">
+      <select v-model="statusFilter" class="control pr-8">
         <option v-for="status in statusFilterOptions" :key="status || 'all'" :value="status">
           {{ status ? status.replaceAll('_', ' ') : 'Semua status proses' }}
         </option>
       </select>
-      <select v-model="sortMode" class="control">
+      <select v-model="sortMode" class="control pr-8">
         <option value="statusPriority">Status Aktif Terlebih Dahulu</option>
         <option value="joinDateAsc">Terdekat akan join</option>
         <option value="joinDateDesc">Terlama akan join</option>

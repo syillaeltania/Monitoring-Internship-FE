@@ -176,4 +176,11 @@ export const api = {
   updateCompletion: (internId: string, payload: Record<string, unknown>) => http.put(`/completion/${internId}`, payload),
   organization: () => request('/organization', { units: [], activeInterns: fallbackInterns.filter((item) => item.status === 'ACTIVE') }),
   importExcel: () => http.post('/import/excel'),
+
+  // Issues
+  issues: (params?: any) => http.get('/issues', { params }).then((res) => res.data),
+  createIssue: (data: any) => http.post('/issues', data),
+  updateIssue: (id: string, data: any) => http.put(`/issues/${id}`, data),
+  deleteIssue: (id: string) => http.delete(`/issues/${id}`),
+  issuesAnalytics: (params?: any) => http.get('/issues/analytics', { params }).then((res) => res.data),
 };

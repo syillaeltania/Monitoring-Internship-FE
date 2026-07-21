@@ -208,7 +208,7 @@ onMounted(loadData);
         </div>
       </div>
 
-      <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
+      <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <select v-model="reportKind" class="control">
           <option v-for="item in reportKinds" :key="item.value" :value="item.value">{{ item.label }}</option>
         </select>
@@ -224,23 +224,23 @@ onMounted(loadData);
           <option v-for="year in yearOptions" :key="year" :value="String(year)">Selesai: {{ year }}</option>
         </select>
         <select v-model="filters.type" class="control">
-          <option value="">Semua tipe</option>
+          <option value="">Semua Tipe</option>
           <option value="INSTITUTION">Instansi</option>
           <option value="PROFESSIONAL">Profesional</option>
         </select>
         <select v-model="filters.division" class="control">
-          <option value="">Semua divisi</option>
+          <option value="">Semua Divisi</option>
           <option v-for="division in divisionCategories" :key="division" :value="division">{{ division }}</option>
         </select>
         <select v-model="filters.status" class="control">
-          <option value="">Semua status</option>
+          <option value="">Semua Status</option>
           <option value="ACTIVE">Aktif</option>
           <option value="PLANNED">Rencana</option>
           <option value="COMPLETED">Selesai</option>
           <option value="TERMINATED">Terminated</option>
         </select>
+        <input v-model="filters.leader" class="control" placeholder="Filter leader / PIC" />
       </div>
-      <input v-model="filters.leader" class="control mt-3" placeholder="Filter leader / PIC" />
       <p v-if="exportStatus" class="mt-3 text-sm text-slate-600">{{ exportStatus }}</p>
     </section>
   </div>

@@ -18,6 +18,10 @@ const props = defineProps<{
   tone?: ToneKey;
 }>();
 
+const emit = defineEmits<{
+  (e: 'bar-click', name: string, title: string): void;
+}>();
+
 const valueFormat = computed(() => props.valueFormat ?? 'currency');
 const xAxisLabels = computed(() => props.data.map((item) => item.name ?? item.month));
 
@@ -48,8 +52,19 @@ const option = computed(() => {
           radius: ['42%', '68%'],
           center: ['50%', '43%'],
           avoidLabelOverlap: true,
-          label: { show: false },
-          labelLine: { show: false },
+          label: { 
+            show: true,
+            formatter: '{d}%',
+            color: '#77736F',
+            fontSize: 11,
+            fontWeight: 600,
+          },
+          labelLine: { 
+            show: true,
+            length: 12,
+            length2: 12,
+            lineStyle: { color: '#D6CEC3' }
+          },
           color: chartPalette,
           data: props.data,
         },
@@ -109,6 +124,6 @@ const option = computed(() => {
       <span class="h-8 w-1 rounded-full" :class="toneAccentClass(tone ?? 'green')"></span>
       <h3 class="text-sm font-semibold text-ink">{{ title }}</h3>
     </div>
-    <VChart class="h-64 w-full sm:h-72" :option="option" autoresize />
+    <VChart class="h-64 w-full sm:h-72" :option="option" autoresize @click="(e: any) => emit('bar-click', e.name, title)" />
   </div>
 </template>

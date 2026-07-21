@@ -8,6 +8,7 @@ import CompletionView from './views/CompletionView.vue';
 import OrganizationView from './views/OrganizationView.vue';
 import ReportsView from './views/ReportsView.vue';
 import ProfilingQAView from './views/ProfilingQAView.vue';
+import IssuesView from './views/IssuesView.vue';
 import SignInView from './views/auth/SignInView.vue';
 import SignUpView from './views/auth/SignUpView.vue';
 import ForgotPasswordView from './views/auth/ForgotPasswordView.vue';
@@ -33,6 +34,7 @@ export const router = createRouter({
     { path: '/completion', component: CompletionView },
     { path: '/organization', component: OrganizationView },
     { path: '/reports', component: ReportsView },
+    { path: '/issues', component: IssuesView },
   ],
 });
 
