@@ -245,7 +245,7 @@ async function saveIssue() {
     </section>
 
     <section>
-      <SimpleChart :title="`Tren Isu Sepanjang Tahun ${filters.year}`" type="line" :data="analytics.charts.trend" value-format="count" tone="blue" />
+      <SimpleChart :title="`Tren Isu Sepanjang Tahun ${filters.year}`" type="line" :data="analytics.charts.trend" value-format="count" tone="cyan" />
     </section>
 
     <section class="grid gap-4 xl:grid-cols-3">
