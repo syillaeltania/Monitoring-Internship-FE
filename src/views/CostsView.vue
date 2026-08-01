@@ -168,7 +168,7 @@ watch(filters, async () => {
 
   <section class="mb-6 grid gap-4 xl:grid-cols-4">
     <article class="panel border-[#3158E8]/20 bg-[#EEF2FF] p-5">
-      <p class="text-xs font-semibold uppercase text-[#3158E8]">Data</p>
+      <p class="text-xs font-semibold uppercase text-[#3158E8]">Konteks Data</p>
       <h2 class="mt-2 text-lg font-semibold text-ink">{{ selectedMonthLabel }} {{ filters.year }}</h2>
       <div class="mt-4 space-y-3 text-sm text-[#77736F]">
         <div class="flex justify-between gap-3"><span>Peserta terhitung</span><strong class="text-ink">{{ participantCount }}</strong></div>
@@ -178,7 +178,7 @@ watch(filters, async () => {
     </article>
 
     <article class="panel border-[#A8E9BE] bg-[#ECF8EF] p-5">
-      <p class="text-xs font-semibold uppercase text-[#2F7F52]">Information</p>
+      <p class="text-xs font-semibold uppercase text-[#2F7F52]">Rincian Biaya</p>
       <h2 class="mt-2 text-lg font-semibold text-ink">{{ rupiah(data.total) }}</h2>
       <div class="mt-4 space-y-3 text-sm text-[#77736F]">
         <div class="flex justify-between gap-3"><span>Average cost</span><strong class="text-ink">{{ rupiah(averageCost) }}</strong></div>
@@ -190,7 +190,7 @@ watch(filters, async () => {
     </article>
 
     <article class="panel border-[#B9A0F6]/40 bg-[#F4F0FF] p-5">
-      <p class="text-xs font-semibold uppercase text-[#6F54C8]">Knowledge</p>
+      <p class="text-xs font-semibold uppercase text-[#6F54C8]">Sorotan Pengeluaran</p>
       <h2 class="mt-2 text-lg font-semibold text-ink">{{ topDivision?.name ?? '-' }}</h2>
       <p class="mt-1 text-sm text-[#77736F]">Divisi dengan cost terbesar: {{ rupiah(topDivision?.value ?? 0) }}</p>
       <div class="mt-4 pt-4 border-t border-[#B9A0F6]/30">
@@ -208,7 +208,7 @@ watch(filters, async () => {
     </article>
 
     <article class="panel border-[#F7D95D] bg-[#FFF5C8] p-5">
-      <p class="text-xs font-semibold uppercase text-[#8A6A00]">Wisdom</p>
+      <p class="text-xs font-semibold uppercase text-[#8A6A00]">Rekomendasi Tindakan</p>
       <h2 class="mt-2 text-lg font-semibold text-ink">Rekomendasi HCM</h2>
       <ul class="mt-4 space-y-3 text-sm text-[#77736F]">
         <li v-for="item in wisdomItems" :key="item" class="border-l-2 border-success pl-3">{{ item }}</li>

@@ -244,6 +244,10 @@ async function saveIssue() {
       <StatCard label="Isu Belum Selesai" :value="analytics.summary.unresolvedIssues" tone="slate" />
     </section>
 
+    <section>
+      <SimpleChart :title="`Tren Isu Sepanjang Tahun ${filters.year}`" type="line" :data="analytics.charts.trend" value-format="count" tone="blue" />
+    </section>
+
     <section class="grid gap-4 xl:grid-cols-3">
       <SimpleChart title="Distribusi Jenis Isu" type="pie" :data="analytics.charts.byType" value-format="count" tone="orange" />
       <SimpleChart title="Isu per Divisi" type="bar" :data="analytics.charts.byDivision" value-format="count" tone="red" @bar-click="handleChartClick" class="cursor-pointer" />
