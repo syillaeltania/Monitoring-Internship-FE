@@ -93,7 +93,7 @@ export const normalizePlacementTeam = (team?: string, position?: string) => {
   if (upperTeam === 'MSOS-4' || upperTeam === 'MSOS 4' || upperTeam === 'MSO-4' || upperTeam === 'MSO 4') return 'MSO 4';
   if (upperTeam === 'MSOS-5' || upperTeam === 'MSOS 5' || upperTeam === 'MSO-5' || upperTeam === 'MSO 5') return 'MSO 5';
   if (upperTeam === 'MSOS-6' || upperTeam === 'MSOS 6' || upperTeam === 'MSO-6' || upperTeam === 'MSO 6') return 'MSO 6';
-  if (upperTeam === 'SQ') return 'Software Quality';
+  if (upperTeam === 'SQ' || upperTeam === 'SOFTWARE QUALITY' || upperTeam === 'SOFTWAREQUALITY') return 'Software Quality';
 
   return rawTeam;
 };

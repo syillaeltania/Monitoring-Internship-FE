@@ -45,6 +45,19 @@ router.beforeEach(async (to) => {
   const isPublic = Boolean(to.meta.public);
   const isAuthOnly = Boolean(to.meta.authOnly);
 
+  if (!isPublic && auth.isAuthenticated) {
+    const expiryReason = await auth.enforceSessionTimeout();
+    if (expiryReason) {
+      return {
+        path: '/sign-in',
+        query: {
+          session: expiryReason === 'idle' ? 'idle-timeout' : 'expired',
+          redirect: to.fullPath,
+        },
+      };
+    }
+  }
+
   if (!isPublic && !auth.isAuthenticated) {
     return { path: '/sign-in', query: { redirect: to.fullPath } };
   }

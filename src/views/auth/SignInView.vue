@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
+import { computed, reactive, ref } from 'vue';
 import { RouterLink, useRoute, useRouter } from 'vue-router';
 import AuthLayout from '../../components/auth/AuthLayout.vue';
 import PasswordInput from '../../components/auth/PasswordInput.vue';
@@ -12,6 +12,11 @@ const router = useRouter();
 const form = reactive({ email: '', password: '', remember: true });
 const errors = reactive({ email: '', password: '', form: '' });
 const submitting = ref(false);
+const sessionNotice = computed(() => {
+  if (route.query.session === 'idle-timeout') return 'Sesi Anda berakhir karena tidak ada aktivitas selama 60 menit. Silakan sign in kembali.';
+  if (route.query.session === 'expired') return 'Sesi Anda sudah mencapai batas 8 jam. Silakan sign in kembali.';
+  return '';
+});
 
 function validate() {
   errors.email = !form.email ? 'Email wajib diisi.' : !isValidEmail(form.email) ? 'Format email belum valid.' : '';
@@ -60,6 +65,7 @@ async function submit() {
         <RouterLink class="font-semibold text-[#3158E8]" to="/forgot-password">Forgot password?</RouterLink>
       </div>
 
+      <p v-if="sessionNotice" class="rounded-xl bg-blue-50 px-3 py-2 text-sm font-medium text-[#3158E8]">{{ sessionNotice }}</p>
       <p v-if="errors.form" class="rounded-xl bg-red-50 px-3 py-2 text-sm font-medium text-[#DC2626]">{{ errors.form }}</p>
 
       <button class="h-12 w-full rounded-xl bg-[#3158E8] text-sm font-semibold text-white transition hover:bg-[#2749C8] disabled:cursor-not-allowed disabled:opacity-60" :disabled="submitting">

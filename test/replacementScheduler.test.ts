@@ -1,7 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import type { Intern } from '../src/services/api.ts';
-import { buildEndingSoonReminders, buildReplacementBoard, buildSchedulerRows, officialReplacementTeams, getMonthInterns, getReplacementCellTone } from '../src/utils/replacementScheduler.ts';
+import {
+  buildEndingSoonReminders,
+  buildReplacementBoard,
+  buildSchedulerRows,
+  officialReplacementTeams,
+  getMonthInterns,
+  getReplacementCellTone,
+} from '../src/utils/replacementScheduler.ts';
 
 const interns: Intern[] = [
   {

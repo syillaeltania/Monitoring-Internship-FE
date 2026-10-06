@@ -2,6 +2,16 @@ import { defineStore } from 'pinia';
 import type { Session, User } from '@supabase/supabase-js';
 import { supabase } from '../services/supabase';
 import { normalizeRole, type AppRole } from '../utils/authRoles';
+import {
+  createSessionMetadata,
+  getSessionExpiryReason,
+  parseSessionMetadata,
+  SESSION_METADATA_KEY,
+  stringifySessionMetadata,
+  touchSessionMetadata,
+  type SessionExpiryReason,
+  type SessionMetadata,
+} from '../utils/sessionTimeout';
 
 export interface UserProfile {
   id: string;
@@ -23,6 +33,10 @@ const friendlyAuthError = (message?: string) => {
   return 'Proses autentikasi belum berhasil. Silakan coba lagi.';
 };
 
+const activityEvents = ['click', 'keydown', 'mousemove', 'scroll', 'touchstart'] as const;
+const activityWriteThrottleMs = 60 * 1000;
+const sessionCheckIntervalMs = 30 * 1000;
+
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: null as User | null,
@@ -30,6 +44,10 @@ export const useAuthStore = defineStore('auth', {
     profile: null as UserProfile | null,
     loading: false,
     initialized: false,
+    sessionExpiredReason: null as SessionExpiryReason | null,
+    sessionTimerId: null as number | null,
+    sessionActivityBound: false,
+    lastActivityWriteAt: 0,
   }),
   getters: {
     isAuthenticated: (state) => Boolean(state.session?.user),
@@ -43,12 +61,22 @@ export const useAuthStore = defineStore('auth', {
       const { data } = await supabase.auth.getSession();
       this.session = data.session;
       this.user = data.session?.user ?? null;
-      if (this.user) await this.fetchProfile();
+      if (this.user) {
+        await this.fetchProfile();
+        this.startSessionTracking();
+        await this.enforceSessionTimeout();
+      }
       supabase.auth.onAuthStateChange(async (_event, session) => {
         this.session = session;
         this.user = session?.user ?? null;
         this.profile = null;
-        if (this.user) await this.fetchProfile();
+        if (this.user) {
+          await this.fetchProfile();
+          this.startSessionTracking();
+          await this.enforceSessionTimeout();
+        } else {
+          this.stopSessionTracking();
+        }
       });
       this.initialized = true;
       this.loading = false;
@@ -74,6 +102,7 @@ export const useAuthStore = defineStore('auth', {
         this.session = data.session;
         this.user = data.user;
         await this.fetchProfile();
+        this.startSessionTracking(true);
         return data;
       } finally {
         this.loading = false;
@@ -103,6 +132,7 @@ export const useAuthStore = defineStore('auth', {
         this.session = null;
         this.user = null;
         this.profile = null;
+        this.stopSessionTracking();
       } finally {
         this.loading = false;
       }
@@ -125,6 +155,82 @@ export const useAuthStore = defineStore('auth', {
         if (error) throw new Error(friendlyAuthError(error.message));
       } finally {
         this.loading = false;
+      }
+    },
+    getSessionStorage() {
+      if (typeof window === 'undefined') return null;
+      return window.localStorage;
+    },
+    readSessionMetadata(): SessionMetadata | null {
+      return parseSessionMetadata(this.getSessionStorage()?.getItem(SESSION_METADATA_KEY) ?? null);
+    },
+    writeSessionMetadata(metadata: SessionMetadata) {
+      this.getSessionStorage()?.setItem(SESSION_METADATA_KEY, stringifySessionMetadata(metadata));
+    },
+    clearSessionMetadata() {
+      this.getSessionStorage()?.removeItem(SESSION_METADATA_KEY);
+      this.lastActivityWriteAt = 0;
+    },
+    startSessionTracking(resetStartedAt = false) {
+      if (typeof window === 'undefined') return;
+
+      const now = Date.now();
+      const existing = this.readSessionMetadata();
+      const metadata = resetStartedAt || !existing ? createSessionMetadata(now) : existing;
+      this.writeSessionMetadata(metadata);
+      this.lastActivityWriteAt = metadata.lastActivityAt;
+
+      if (!this.sessionActivityBound) {
+        activityEvents.forEach((eventName) => {
+          window.addEventListener(eventName, this.recordActivity, { passive: true });
+        });
+        document.addEventListener('visibilitychange', this.recordActivity, { passive: true });
+        this.sessionActivityBound = true;
+      }
+
+      if (!this.sessionTimerId) {
+        this.sessionTimerId = window.setInterval(() => {
+          void this.enforceSessionTimeout({ redirect: true });
+        }, sessionCheckIntervalMs);
+      }
+    },
+    recordActivity() {
+      if (!this.isAuthenticated) return;
+      if (typeof document !== 'undefined' && document.visibilityState === 'hidden') return;
+
+      const now = Date.now();
+      if (now - this.lastActivityWriteAt < activityWriteThrottleMs) return;
+
+      const metadata = this.readSessionMetadata() ?? createSessionMetadata(now);
+      this.writeSessionMetadata(touchSessionMetadata(metadata, now));
+      this.lastActivityWriteAt = now;
+    },
+    stopSessionTracking() {
+      if (typeof window !== 'undefined' && this.sessionTimerId) {
+        window.clearInterval(this.sessionTimerId);
+      }
+      this.sessionTimerId = null;
+      this.clearSessionMetadata();
+    },
+    async enforceSessionTimeout(options: { redirect?: boolean } = {}) {
+      if (!this.isAuthenticated) return null;
+      const reason = getSessionExpiryReason(this.readSessionMetadata(), Date.now());
+      if (!reason) return null;
+      await this.expireSession(reason, Boolean(options.redirect));
+      return reason;
+    },
+    async expireSession(reason: SessionExpiryReason, redirect = false) {
+      this.sessionExpiredReason = reason;
+      await supabase.auth.signOut();
+      this.session = null;
+      this.user = null;
+      this.profile = null;
+      this.stopSessionTracking();
+
+      if (redirect && typeof window !== 'undefined') {
+        const session = reason === 'idle' ? 'idle-timeout' : 'expired';
+        const target = `/sign-in?session=${session}`;
+        if (window.location.pathname !== '/sign-in') window.location.assign(target);
       }
     },
   },
